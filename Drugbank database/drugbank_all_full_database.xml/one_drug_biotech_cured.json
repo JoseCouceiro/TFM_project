@@ -1,0 +1,103 @@
+{
+    "@type": "biotech",
+    "@created": "2005-06-13",
+    "@updated": "2023-01-03",
+    "drugbank-id": [{"@primary": true, "$": "DB00001"}, {"@primary": false, "$": "BTD00024"},{"@primary": false, "$": "BIOD00024"}],
+    "name": "Lepirudin",
+    "cas-number": "138068-37-8",
+    "unii": "Y43GF64R34",
+    "groups": {"group": ["approved", "withdrawn"]},
+    "state": "solid",
+    "classification": {
+        "description": null,
+        "direct-parent": "Peptides",
+        "kingdom": "Organic Compounds",
+        "superclass": "Organic Acids",
+        "class": "Carboxylic Acids and Derivatives",
+        "subclass": "Amino Acids, Peptides, and Analogues"
+    },
+    "international-brands": null,
+    "mixtures": null,
+    "manufacturers": {
+        "manufacturer": [
+            {"@generic": false, "@url": "", "$": "Bayer healthcare pharmaceuticals inc"}
+        ]
+    },
+    "atc-codes": {
+        "atc-code": [
+            {
+                "@code": "B01AE02",
+                "level": [
+                    {"@code": "B01AE", "$": "Direct thrombin inhibitors"},
+                    {"@code": "B01A", "$": "ANTITHROMBOTIC AGENTS"},
+                    {"@code": "B01", "$": "ANTITHROMBOTIC AGENTS"},
+                    {"@code": "B", "$": "BLOOD AND BLOOD FORMING ORGANS"}
+                    ]
+            }
+        ]
+    },
+    "ahfs-codes": null,
+    "sequences": {
+        "sequence": [
+            {"@format": "FASTA", "$": ">DB00001 sequence\nLTYTDCTESGQNLCLCEGSNVCGQGNKCILGSDGEKNQCVTGEGTPKPQSHNDGDFEEIP\nEEYLQ"}
+        ]
+    },
+    "experimental-properties": {
+        "property": [
+            {"kind": "Water Solubility",
+            "value": "Soluble",
+            "source": "Health Canada drug label"},
+            {"kind": "Melting Point",
+            "value": "65 \u00b0C",
+            "source": "Otto, A. & Seckler, R. Eur. J. Biochem. 202:67-73 (1991)"},
+            {"kind": "Isoelectric Point",
+            "value": "3.7",
+            "source": "Health Canada drug label"},
+            {"kind": "Molecular Weight",
+            "value": "6979.0",
+            "source": null},
+            {"kind": "Molecular Formula",
+            "value": "C287H440N80O111S6",
+            "source": null}
+        ]
+    },
+    "external-identifiers": {
+        "external-identifier": [
+            {"resource": "Drugs Product Database (DPD)", "identifier": "11916"},
+            {"resource": "PubChem Substance", "identifier": "46507011"},
+            {"resource": "KEGG Drug", "identifier": "D06880"},
+            {"resource": "PharmGKB", "identifier": "PA450195"},
+            {"resource": "UniProtKB", "identifier": "P01050"},
+            {"resource": "Therapeutic Targets Database", "identifier": "DAP000541"},
+            {"resource": "Wikipedia", "identifier": "Lepirudin"},
+            {"resource": "ChEMBL", "identifier": "CHEMBL1201666"},
+            {"resource": "RxCUI", "identifier": "237057"}
+        ]
+    },
+    "snp-effects": null,
+    "snp-adverse-drug-reactions": null,
+    "targets": {
+        "target": [
+            {
+                "@position": 1,
+                "id": "BE0000048",
+                "name": "Prothrombin",
+                "organism": "Humans",
+                "actions": {
+                    "action": ["inhibitor"]
+                },
+
+                "known-action": "yes",
+                "polypeptide": [
+                    {
+                        "@id": "P00734",
+                        "@source": "Swiss-Prot",
+                    }   
+                ]
+            }
+        ]
+    },
+    "enzymes": null,
+    "carriers": null,
+    "transporters": null
+},
