@@ -85,7 +85,19 @@
                 {"category": "Sulfur Compounds", "mesh-id": "D013457"}
             ]
         },
-        "atc-codes": null,
+        "atc-codes": {
+            "atc-code": [
+                {
+                    "@code": "B01AE02",
+                    "level": [
+                        {"@code": "B01AE", "$": "Direct thrombin inhibitors"},
+                        {"@code": "B01A", "$": "ANTITHROMBOTIC AGENTS"},
+                        {"@code": "B01", "$": "ANTITHROMBOTIC AGENTS"},
+                        {"@code": "B", "$": "BLOOD AND BLOOD FORMING ORGANS"}
+                        ]
+                }
+            ]
+        },
         "ahfs-codes": null,
         "calculated-properties": {
             "property": [
