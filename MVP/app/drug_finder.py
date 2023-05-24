@@ -1,3 +1,4 @@
+import streamlit as st
 import os
 import numpy as np
 import json
@@ -11,7 +12,7 @@ query=input('Insert CID of molecule: ')
 with open(os.path.join('..','res','config', 'class_codes.json'), 'r') as file:
     class_codes_dict = json.load(file)
 
-CNN_model = load_model(os.path.join('..','compiled_models','checkpoints', '04-0.300.hdf5'))
+CNN_model = load_model(os.path.join('..','compiled_models','checkpoints', '13-0.330.hdf5'))
 
    
 def get_molecule(cid):
@@ -72,4 +73,5 @@ def interface(query):
             query = input('Please, enter a valid CID: ')
 
 interface(query)
+
 

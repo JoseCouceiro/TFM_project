@@ -1,0 +1,73 @@
+,cid,name,atc_code
+0,1,Acetylcarnitine,N06BX12
+1,137,Aminolevulinic acid,L01XD04
+2,176,Acetic Acid,G01AD02
+3,187,Acetylcholine,S01EB09
+4,237,Quinacrine,P01AX05
+5,244,Benzyl Alcohol,P03AX06
+6,247,Betaine,A16AA06
+7,248,Loramine AMB-13,A16AA06
+8,259,Bromide ion,N05CM11
+9,280,Carbon Dioxide,V03AN02
+10,281,Carbon Monoxide,V04CX08
+11,311,Citric Acid,A09AB04
+12,313,Hydrochloric Acid,A09AB03
+13,338,Salicylic Acid,D01AE12
+14,359,Phloroglucinol,A03AX12
+15,444,Bupropion,N06AX12
+16,454,Octanal,A07XA01
+17,460,Guaiacol,R05CA08
+18,546,Phosphonoacetic acid,J05AD02
+19,564,Aminocaproic acid,B02AA01
+20,598,2-Mercaptoethanesulfonic acid,V03AF01
+21,612,Lactic Acid,G01AD01
+22,679,Dimethyl Sulfoxide,G04BX13
+23,681,Dopamine,C01CA04
+24,702,Ethanol,D08AX08
+25,718,"Fructose 1,6-diphosphate",C01EB07
+26,727,Lindane,P03AB02
+27,750,Glycine,B05CX03
+28,753,Glycerin,A06AG04
+29,772,Clivarin,B01AB08
+30,784,Hydrogen Peroxide,D08AX01
+31,785,Hydroquinone,D11AX11
+32,807,Iodine,D08AG03
+33,838,DL-Adrenaline,C10AX10
+34,861,Rathyronine,H03AA03
+35,864,Thioctic acid,A16AX01
+36,876,DL-Methionine,V03AB26
+37,892,Inositol,A11HA07
+38,896,Melatonin,N05CH01
+39,936,Nicotinamide,A11HA01
+40,938,Nicotinic acid,C10AD02
+41,947,Nitrogen,V03AN04
+42,948,Nitrous Oxide,N01AX13
+43,977,Oxygen,V03AN01
+44,978,4-Aminobenzoic acid,D02BA01
+45,996,Phenol,C05BB05
+46,1031,1-Propanol,D08AX03
+47,1046,Pyrazinamide,J04AK01
+48,1051,Pyridoxal phosphate,A11HA06
+49,1054,Pyridoxine,A11HA02
+50,1130,3-(4-Amino-2-methyl-pyrimidin-5-ylmethyl)-5-(2-hydroxy-ethyl)-4-methyl-thiazol-3-ium,A11DA01
+51,1176,Urea,B05BC02
+52,1234,Gallopamil,C08DA02
+53,1292,Mandelic Acid,J01XX06
+54,1593,"3-[2-[1-(6-hydroxy-6-methylheptan-2-yl)-7a-methyl-2,3,3a,5,6,7-hexahydro-1H-inden-4-ylidene]ethylidene]-4-methylidenecyclohexan-1-ol",H05BX05
+55,1662,Meglutol,C10AX05
+56,1684,Pleconaril,J05AX06
+57,1727,4-Aminopyridine,N07XX07
+58,1775,Phenytoin,N03AB02
+59,1839,Nitrofural;NFZ,D08AF01
+60,1923,8-Hydroxyquinoline,G01AC30
+61,1935,Tacrine,N06DA01
+62,1978,Acebutolol,C07AB04
+63,1979,Aceclidine,S01EB08
+64,1981,Acemetacin,M01AB11
+65,1983,Acetaminophen,N02BE01
+66,1985,Acetarsol,G01AB01
+67,1986,Acetazolamide,S01EC01
+68,1989,Acetohexamide,A10BB31
+69,1990,Acetohydroxamic acid,G04BX03
+70,1993,Methacholine,V04CX03
+71,1995,Acetylleucine,N07CA04
