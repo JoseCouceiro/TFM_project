@@ -7,16 +7,16 @@ import pubchempy as pcp
 
 
 
-st.title('This is how you print a molecule')
+query=st.text_input("Insert molecule's CID or SMILES: ")
 
-cid=st.text_input('a cid, please: ')
+def get_molecule_from_smiles(query):
+    """
+    Function that obtains an RDKit molecule object from a SMILES.
+    Input: SMILES as a string
+    Output: RDKit molecule
+    """
+    mol = Chem.MolFromSmiles(query)
+    st.write(mol)
+    return mol
 
-if cid:
-    comp_mol = pcp.Compound.from_cid(cid)
-    smiles_mol = comp_mol.canonical_smiles
-    mol = Chem.MolFromSmiles(smiles_mol)
-
-    drawing = Draw.MolToImage(mol)
-
-
-    st.image(drawing)
+get_molecule_from_smiles(query)
