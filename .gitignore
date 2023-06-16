@@ -19,3 +19,8 @@ Pubmed_database/Compound_168000001_168500000.xml
 Pubmed_database/Compound_168000001_168500000.sdf
 Pubmed_database/two_pubmed_instances.xml
 MVP/app/__pycache__/compute_fp.cpython-311.pyc
+*.csv
+*.json
+*.asn
+*.sdf
+*.xml
