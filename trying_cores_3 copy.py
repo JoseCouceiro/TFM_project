@@ -9,7 +9,7 @@ def get_cid_from_inchi(inchi):
     Output: molecule's CID
     """
     try:
-        comp = pcp.get_compounds(inchi, 'inchi')
+        comp = pcp.get_compounds(smiles, 'smiles')
     except:
         print('Something went wrong obtaining the CID')
         return None
@@ -23,7 +23,7 @@ drugs_dataset = drugs[sel_cols]
 
 if __name__ == '__main__':
     with Pool(8) as p:
-        drugs_dataset['CID']= drugs['InChI'].map(get_cid_from_inchi)
+        drugs_dataset['CID']= drugs['SMILES'].map(get_cid_from_inchi)
 
         drugs_dataset.to_csv('nuc_drugbank_dataset.csv', Index = False)
 
