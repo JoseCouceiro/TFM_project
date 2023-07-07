@@ -9,6 +9,12 @@ from tensorflow.keras.models import load_model
 from compute_fp import Compute_FP as CFP
 
 st.title('Drug predictor')
+st.markdown('A drug discovery tool by José R. Couceiro')
+with st.sidebar:
+    st.write("Get your molecule's CID [here](https://pubchem.ncbi.nlm.nih.gov/)")
+    st.image(os.path.join('..', 'res', 'images', 'pubchem.png'), width=200)
+    st.write("Draw your molecule and get its SMILES [here](https://web.chemdoodle.com/demos/smiles#customise-template)")
+    st.image(os.path.join('..', 'res', 'images', 'chemdoodleweb.png'), width=200)
 
 query=st.text_input("Insert molecule's CID or SMILES: ")
 #query_smiles=[st.text_input('Insert SMILES'), 'SMILES']
@@ -16,7 +22,7 @@ query=st.text_input("Insert molecule's CID or SMILES: ")
 with open(os.path.join('..','res','config', 'class_codes.json'), 'r') as file:
     class_codes_dict = json.load(file)
 
-CNN_model = load_model(os.path.join('..','compiled_models','checkpoints', '13-0.330.hdf5'))
+CNN_model = load_model(os.path.join('..','compiled_models','checkpoints', '04-0.991.hdf5'))
 
 
 def get_molecule_from_cid(cid):
@@ -65,7 +71,7 @@ def return_predictions(arr, query):
     Output: Prints predictions of which class a molecule is assigned to and the probability with which it is assigned to that class.
     """
     y_pred = CNN_model.predict(arr)
-    st.markdown(f"##### The compound with {is_cid_or_or_smiles(query)} '{query}' is predicted as {class_codes_dict[str(np.argmax(y_pred))]} with probability: {y_pred.max():.2f}**")
+    st.markdown(f"##### The compound with {is_cid_or_smiles(query)} '{query}' is predicted as {class_codes_dict[str(np.argmax(y_pred))]} with probability: {y_pred.max():.2f}**")
 
 def pred_from_cid(query):
     """
@@ -73,19 +79,19 @@ def pred_from_cid(query):
     Input: user input
     Output: prints prediction
     """
-    input_is_ok = False
-    while not input_is_ok:
+    mol = False
+    while not mol:
         try:
             mol = get_molecule_from_cid(query)
-            mol_image = Draw.MolToImage(mol)
-            st.write("This is your compound's structure")
-            st.image(mol_image)
-            input_is_ok = True
-            fp_chain = get_fp(mol)
-            arr = reshape_fp_array(fp_chain)
-            return_predictions(arr, query)
+            if mol:
+                st.write("This is your compound's structure")
+                mol_image = Draw.MolToImage(mol)
+                st.image(mol_image)
+                fp_chain = get_fp(mol)
+                arr = reshape_fp_array(fp_chain)
+                return_predictions(arr, query)
         except:
-            st.write('Please, enter a valid CID')
+            st.write(':red[Please, enter a valid CID]')
             break
 
 def pred_from_smiles(query):
@@ -94,36 +100,30 @@ def pred_from_smiles(query):
     Input: user input
     Output: prints prediction
     """
-    input_is_ok = False
-    while not input_is_ok:
-        try:
-            mol = get_molecule_from_smiles(query)
-            mol_image = Draw.MolToImage(mol)
+    mol = False
+    while not mol:
+        mol = get_molecule_from_smiles(query)
+        if mol:
             st.write("This is your compound's structure")
+            mol_image = Draw.MolToImage(mol)
             st.image(mol_image)
-            input_is_ok = True
             fp_chain = get_fp(mol)
             arr = reshape_fp_array(fp_chain)
             return_predictions(arr, query)
-        except:
-            st.write('Please, enter a valid SMILES')
+        else:
+            st.write(':red[Please, enter a valid SMILES]')
             break
-            
-def is_cid_or_or_smiles(user_input):
+        
+def is_cid_or_smiles(user_input):
+    if user_input == '':
+        return None
     try:
-        pcp.Compound.from_cid(user_input)
-        return 'CID'
+        if int(user_input):
+            return 'CID'
     except:
-        print('not a cid')
-        pass
-    try:
-        Chem.MolFromSmiles(user_input)
-        return 'SMILES'
-    except:
-        print('not a smiles')
-        pass
+        return('SMILES')
 
-query_type = is_cid_or_or_smiles(query)
+query_type = is_cid_or_smiles(query)
 if query_type == 'SMILES':
     pred_from_smiles(query)
 if query_type == 'CID':
