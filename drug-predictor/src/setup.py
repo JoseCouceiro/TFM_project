@@ -1,8 +1,6 @@
 from setuptools import find_packages, setup
 
-entry_point = (
-    "drug-predictor = drug_predictor.__main__:main"
-)
+entry_point = "drug-predictor = drug_predictor.__main__:main"
 
 
 # get the dependencies and installs

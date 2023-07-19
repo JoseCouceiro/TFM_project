@@ -16,23 +16,27 @@ pubchem:
     filepath: ./data/01_raw/pubchem_compound_list.csv
 
 companies:
-
  type: pandas.CSVDataSet
-
  filepath: data/01_raw/companies.csv
 
 reviews:
-
  type: pandas.CSVDataSet
-
  filepath: data/01_raw/reviews.csv
 
 shuttles:
-
  type: pandas.ExcelDataSet
-
  filepath: data/01_raw/shuttles.xlsx
-
  load_args:
-
   engine: openpyxl # Use modern Excel engine (the default since Kedro 0.18.0)
+
+preprocessed_companies:
+ type: pandas.ParquetDataSet
+ filepath: data/02_intermediate/preprocessed_companies.parquet
+
+preprocessed_shuttles:
+ type: pandas.ParquetDataSet
+ filepath: data/02_intermediate/preprocessed_shuttles.parquet
+
+model_input_table:
+  type: pandas.ParquetDataSet
+  filepath: data/03_primary/model_input_table.parquet
