@@ -15,6 +15,10 @@ pubchem:
     type: pandas.CSVDataSet
     filepath: ./data/01_raw/pubchem_compound_list.csv
 
+processed_gitter:
+    type: pandas.CSVDataSet
+    filepath: ./data/02_intermediate/processed_gitter.csv
+
 companies:
  type: pandas.CSVDataSet
  filepath: data/01_raw/companies.csv
@@ -40,3 +44,8 @@ preprocessed_shuttles:
 model_input_table:
   type: pandas.ParquetDataSet
   filepath: data/03_primary/model_input_table.parquet
+
+regressor:
+    type: pickle.PickleDataSet
+    filepath: data/06_models/regressor.pickle
+    versioned: True
