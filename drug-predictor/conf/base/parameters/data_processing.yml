@@ -6,6 +6,24 @@ gitter:
   columns_to_rename:
     XLogP: 'LogP'
 
+pubchem:
+  columns_to_select:
+    - 'cid'
+    - 'hbondacc'
+    - 'hbonddonor'
+    - 'mw'
+    - 'xlogp'
+    - 'isosmiles'
+  columns_to_drop:
+    - 'ATC_Code'
+  columns_to_rename:
+    cid: 'CID'
+    hbondacc: 'HBondAcceptorCount'
+    hbonddonor: 'HBondDonorCount'
+    mw: 'MolecularWeight'
+    xlogp: 'LogP'
+    isosmiles: 'IsomericSMILES'
+
 matc_gitter_conversion:
   hematologic: "B"
   cardio: "C"

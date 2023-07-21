@@ -1,8 +1,30 @@
+import requests as rq
+import re
 import numpy as np
 import pandas as pd
-import json
-import os
 from typing import List, Dict
+import xmlschema
+
+def parse_xml(x, schema) -> Dict:
+    schema = xmlschema.XMLSchema(schema)
+    drug_dict = schema.to_dict(x)
+    return drug_dict
+
+def shorten_atc_code(x: pd.Series) -> pd.Series:
+    x = x.str[0]
+    return x
+
+def select_columns(x: pd.DataFrame, parameters: List) -> pd.DataFrame:
+    x = x[parameters]
+    return x
+
+def get_atc_code(cid):
+    url = f'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/{cid}/JSON'
+    response = rq.get(url)
+    pat = r"\"[A-Z]\d{2}[A-Z]{2}\d{2}\""
+    atc_code_found = re.search(pat, response.text)
+    if atc_code_found:
+        return atc_code_found.group(0).strip('"')
 
 def drop_columns(x: pd.DataFrame, parameters: List) -> pd.DataFrame:
     x = x.drop(parameters, axis=1)
@@ -42,5 +64,20 @@ def process_gitter(gitter: pd.DataFrame, columns: Dict, conversions: Dict, expla
     gitter = drop_columns(gitter, columns['columns_to_drop'])
     gitter['MATC_Code_Explanation'] = matc_explanation(gitter['MATC_Code_Short'], explanations)
     return gitter
+
+def process_pubchem(pubchem: pd.DataFrame, columns: Dict, explanations: Dict) -> pd.DataFrame:
+    """ Processes the data for pubchem dataset.
+    Args:
+      pubchem: Raw data.
+    Returns:
+      Processed dataset without irrelevant columns, ATC_Code changed to MATC_Code_Short, and added columns RuleFive and MATC_conversion"""
+    pubchem = select_columns(pubchem, columns['columns_to_select'])
+    pubchem = rename_columns(pubchem, columns['columns_to_rename'])
+    pubchem = is_lipinski(pubchem)
+    pubchem['ATC_Code'] = pubchem['CID'].map(get_atc_code)
+    pubchem['MATC_Code_Short'] = shorten_atc_code(pubchem['ATC_Code'])
+    pubchem['MATC_Code_Explanation'] = matc_explanation(pubchem['MATC_Code_Short'], explanations)
+    pubchem = drop_columns(pubchem, columns['columns_to_drop'])
+    return pubchem
 
 
