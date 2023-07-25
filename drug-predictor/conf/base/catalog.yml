@@ -8,13 +8,9 @@ gitter:
     filepath: ./data/01_raw/gitter_dataset.csv
 
 drugbank:
-    type: pandas.XMLDataSet
-    filepath: ./data/01_raw/two_instances.xml
-
-drugbank_schema:
-    type: pandas.XMLDataSet
-    filepath: ./data/01_raw/drugbank_schema.xsd
-
+    type: json.JSONDataSet
+    filepath: ./data/01_raw/drugbank_database_dict.json
+    
 pubchem:
     type: pandas.CSVDataSet
     filepath: ./data/01_raw/pubchem_compound_list.csv
@@ -27,9 +23,9 @@ processed_pubchem:
     type: pandas.CSVDataSet
     filepath: ./data/02_intermediate/processed_pubchem.csv
 
-drugbank_dict:
-    type: json
-    filepath: ./data/02_intermediate/drugbank_database_dict.json
+preprocessed_drugbank:
+    type: pandas.CSVDataSet
+    filepath: ./data/02_intermediate/preprocessed_drugbank.csv
 
 companies:
  type: pandas.CSVDataSet

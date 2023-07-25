@@ -1,15 +1,74 @@
 import requests as rq
+import json
 import re
 import numpy as np
 import pandas as pd
 from typing import List, Dict
-import xmlschema
+import pubchempy as pcp
 
-def parse_xml(x, schema) -> Dict:
-    schema = xmlschema.XMLSchema(schema)
-    drug_dict = schema.to_dict(x)
-    return drug_dict
+def get_inchikey(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'InChIKey':
+                return dic['value']  
+    except:
+        return None
+    
+def get_h_bond_accept(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'H Bond Acceptor Count':
+                return dic['value']
+    except:        
+        return None
+    
+def get_h_bond_donor(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'H Bond Donor Count':
+                return dic['value']
+    except:        
+        return None
+    
+def get_mol_weight(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'Molecular Weight':
+                return dic['value']
+    except:        
+        return None
+    
+def get_logp(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'logP' and dic['source'] == 'ChemAxon':
+                return dic['value']
+    except:        
+        return None
 
+def get_rule_five(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'Rule of Five':
+                return dic['value']
+    except:        
+        return None
+    
+def get_isomeric_smiles(x: Dict) -> pd.Series:
+    try:
+        for dic in x['calculated-properties']['property']:
+            if dic['kind'] == 'SMILES':
+                return dic['value']
+    except:        
+        return None
+    
+def get_atc_code(x: Dict) -> pd.Series:
+    try:
+        for code in x['atc-codes']['atc-code']:
+            return code['@code']
+    except:
+        return None
+    
 def shorten_atc_code(x: pd.Series) -> pd.Series:
     x = x.str[0]
     return x
@@ -80,4 +139,23 @@ def process_pubchem(pubchem: pd.DataFrame, columns: Dict, explanations: Dict) ->
     pubchem = drop_columns(pubchem, columns['columns_to_drop'])
     return pubchem
 
+def preprocess_drugbank(drugbank: List) -> pd.DataFrame:
+    """ Processes the data for drugbank dataset.
+    Args:
+      drugbank: Raw data in xml format
+    Returns:
+      Processed dataset without irrelevant columns, ATC_Code changed to MATC_Code_Short, and added columns RuleFive and MATC_conversion"""
+    
+    drugs_df = pd.DataFrame()
+    drugs_df['InChIKey'] = list(map(get_inchikey, drugbank))
+    drugs_df['HBondAcceptorCount'] = list(map(get_h_bond_accept, drugbank))
+    drugs_df['HBondDonorCount'] = list(map(get_h_bond_donor, drugbank))
+    drugs_df['MolecularWeight'] = list(map(get_mol_weight, drugbank))
+    drugs_df['LogP'] = list(map(get_logp, drugbank))
+    drugs_df['RuleFive'] = list(map(get_rule_five, drugbank))
+    drugs_df['IsomericSMILES'] = list(map(get_isomeric_smiles, drugbank))
+    drugs_df['ATC_Code'] = list(map(get_atc_code, drugbank))
+    return drugs_df
+
+def 
 

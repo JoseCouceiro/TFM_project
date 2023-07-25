@@ -59,3 +59,5 @@ kedro-telemetry~=0.2.0
 scikit-learn==1.3.0
 kedro-viz==6.3.3 # Visualise pipelines
 pip==23.2
+lxml==4.9.3
+xmlschema==2.3.1

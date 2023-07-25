@@ -72,3 +72,4 @@ validators==0.20.0
 watchdog==3.0.0
 wcwidth @ file:///home/conda/feedstock_root/build_artifacts/wcwidth_1673864653149/work
 zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1677313463193/work
+xmlschema==2.3.1
