@@ -6,6 +6,7 @@ import pandas as pd
 from typing import List, Dict
 import pubchempy as pcp
 
+#drugbank
 def get_inchikey(x: Dict) -> pd.Series:
     try:
         for dic in x['calculated-properties']['property']:
@@ -69,6 +70,14 @@ def get_atc_code(x: Dict) -> pd.Series:
     except:
         return None
     
+def get_cid_from_smiles(smiles):
+    try:
+        mol = pcp.get_compounds(smiles, 'smiles')
+        return int(mol[0].cid)
+    except:
+        print(f'no cid for smiles {smiles}')
+        return None
+    
 def shorten_atc_code(x: pd.Series) -> pd.Series:
     x = x.str[0]
     return x
@@ -76,7 +85,7 @@ def shorten_atc_code(x: pd.Series) -> pd.Series:
 def select_columns(x: pd.DataFrame, parameters: List) -> pd.DataFrame:
     x = x[parameters]
     return x
-
+#pubchem
 def get_atc_code(cid):
     url = f'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/{cid}/JSON'
     response = rq.get(url)
@@ -102,6 +111,7 @@ def is_lipinski(x: pd.DataFrame) -> pd.DataFrame:
     x['RuleFive'] = np.where(((hdonor & haccept & mw) | (hdonor & haccept & clogP) | (hdonor & mw & clogP) | (haccept & mw & clogP)), 1, 0)
     return x
 
+#gitter
 def matc_conversion(x: pd.DataFrame, parameters: Dict) -> pd.DataFrame:
     x['MATC_Code_Short'] = x['drug_class'].map(parameters)
     return x
@@ -157,5 +167,13 @@ def preprocess_drugbank(drugbank: List) -> pd.DataFrame:
     drugs_df['ATC_Code'] = list(map(get_atc_code, drugbank))
     return drugs_df
 
-def 
+def process_drugbank(drugbank: pd.DataFrame, pubchem:pd.DataFrame, columns: Dict, explanations: Dict):
 
+    drugbank = drugbank[drugbank['ATC_Code'].isna()==False]
+    drugbank = drugbank[drugbank['IsomericSMILES'].isna()==False]
+    drugbank['MATC_Code_Short'] = shorten_atc_code(drugbank['ATC_Code'])
+    drugbank = drugbank[drugbank['MATC_Code_Short'].isin(pubchem['MATC_Code_Short'])==False]
+    drugbank['CID'] = drugbank['IsomericSMILES'].map(get_cid_from_smiles)
+    drugbank = drugbank[drugbank['CID'].isna()==False]
+    drugbank = drop_columns(drugbank, columns['columns_to_drop'])
+    drugbank['MATC_Code_Explanation'] = matc_explanation(drugbank['MATC_Code_Short'], explanations)

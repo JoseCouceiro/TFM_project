@@ -24,6 +24,11 @@ pubchem:
     xlogp: 'LogP'
     isosmiles: 'IsomericSMILES'
 
+drugbank:
+  columns_to_drop:
+    - 'InChIKey'
+    - 'ATC_Code'
+
 matc_gitter_conversion:
   hematologic: "B"
   cardio: "C"
