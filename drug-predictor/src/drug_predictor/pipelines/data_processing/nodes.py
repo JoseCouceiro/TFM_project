@@ -1,5 +1,4 @@
 import requests as rq
-import json
 import re
 import numpy as np
 import pandas as pd
@@ -7,6 +6,13 @@ from typing import List, Dict
 import pubchempy as pcp
 
 #drugbank
+def get_small_molecules(x: list):
+    small_drug_list = []
+    for drug in x:
+        if drug['@type'] == 'small molecule':
+            small_drug_list.append(drug)
+    return small_drug_list
+
 def get_inchikey(x: Dict) -> pd.Series:
     try:
         for dic in x['calculated-properties']['property']:
@@ -63,7 +69,7 @@ def get_isomeric_smiles(x: Dict) -> pd.Series:
     except:        
         return None
     
-def get_atc_code(x: Dict) -> pd.Series:
+def get_atc_code_drugbank(x: Dict) -> pd.Series:
     try:
         for code in x['atc-codes']['atc-code']:
             return code['@code']
@@ -120,7 +126,7 @@ def matc_explanation(x: pd.Series, parameters: Dict) -> pd.Series:
     x = x.map(parameters)
     return x
 
-def process_gitter(gitter: pd.DataFrame, columns: Dict, conversions: Dict, explanations: Dict) -> pd.DataFrame:
+def process_gitter(gitter: pd.DataFrame, columns: List, conversions: Dict, explanations: Dict) -> pd.DataFrame:
     """ Processes the data for gitter dataset.
     Args:
       gitter: Raw data.
@@ -134,7 +140,7 @@ def process_gitter(gitter: pd.DataFrame, columns: Dict, conversions: Dict, expla
     gitter['MATC_Code_Explanation'] = matc_explanation(gitter['MATC_Code_Short'], explanations)
     return gitter
 
-def process_pubchem(pubchem: pd.DataFrame, columns: Dict, explanations: Dict) -> pd.DataFrame:
+def preprocess_pubchem(pubchem: pd.DataFrame, columns: Dict) -> pd.DataFrame:
     """ Processes the data for pubchem dataset.
     Args:
       pubchem: Raw data.
@@ -144,6 +150,10 @@ def process_pubchem(pubchem: pd.DataFrame, columns: Dict, explanations: Dict) ->
     pubchem = rename_columns(pubchem, columns['columns_to_rename'])
     pubchem = is_lipinski(pubchem)
     pubchem['ATC_Code'] = pubchem['CID'].map(get_atc_code)
+    pubchem = pubchem[pubchem['ATC_Code'].isna() == False]
+    return pubchem
+
+def process_pubchem(pubchem: pd.DataFrame, columns: Dict, explanations: Dict) -> pd.DataFrame:
     pubchem['MATC_Code_Short'] = shorten_atc_code(pubchem['ATC_Code'])
     pubchem['MATC_Code_Explanation'] = matc_explanation(pubchem['MATC_Code_Short'], explanations)
     pubchem = drop_columns(pubchem, columns['columns_to_drop'])
@@ -155,7 +165,7 @@ def preprocess_drugbank(drugbank: List) -> pd.DataFrame:
       drugbank: Raw data in xml format
     Returns:
       Processed dataset without irrelevant columns, ATC_Code changed to MATC_Code_Short, and added columns RuleFive and MATC_conversion"""
-    
+    drugbank = get_small_molecules(drugbank)
     drugs_df = pd.DataFrame()
     drugs_df['InChIKey'] = list(map(get_inchikey, drugbank))
     drugs_df['HBondAcceptorCount'] = list(map(get_h_bond_accept, drugbank))
@@ -164,16 +174,26 @@ def preprocess_drugbank(drugbank: List) -> pd.DataFrame:
     drugs_df['LogP'] = list(map(get_logp, drugbank))
     drugs_df['RuleFive'] = list(map(get_rule_five, drugbank))
     drugs_df['IsomericSMILES'] = list(map(get_isomeric_smiles, drugbank))
-    drugs_df['ATC_Code'] = list(map(get_atc_code, drugbank))
+    drugs_df['ATC_Code'] = list(map(get_atc_code_drugbank, drugbank))
     return drugs_df
 
 def process_drugbank(drugbank: pd.DataFrame, pubchem:pd.DataFrame, columns: Dict, explanations: Dict):
 
     drugbank = drugbank[drugbank['ATC_Code'].isna()==False]
     drugbank = drugbank[drugbank['IsomericSMILES'].isna()==False]
+    drugbank = drugbank[drugbank['ATC_Code'].isin(pubchem['ATC_Code'])==False]
     drugbank['MATC_Code_Short'] = shorten_atc_code(drugbank['ATC_Code'])
-    drugbank = drugbank[drugbank['MATC_Code_Short'].isin(pubchem['MATC_Code_Short'])==False]
     drugbank['CID'] = drugbank['IsomericSMILES'].map(get_cid_from_smiles)
     drugbank = drugbank[drugbank['CID'].isna()==False]
     drugbank = drop_columns(drugbank, columns['columns_to_drop'])
     drugbank['MATC_Code_Explanation'] = matc_explanation(drugbank['MATC_Code_Short'], explanations)
+    return drugbank
+
+def join_datasets(pubchem: pd.DataFrame, drugbank: pd.DataFrame, gitter: pd.DataFrame):
+
+    drugbank['CID'] = drugbank['CID'].astype('int')
+    drugbank = drugbank[drugbank['CID'].isin(pubchem['CID'])==False]
+    pubchem_drugbank = pd.concat([pubchem, drugbank])
+    gitter = gitter[gitter['CID'].isin(pubchem_drugbank['CID'])==False]
+    all_drugs = pd.concat([gitter, pubchem_drugbank])
+    return all_drugs

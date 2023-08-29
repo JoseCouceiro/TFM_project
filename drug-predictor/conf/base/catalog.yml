@@ -5,19 +5,23 @@
 
 gitter:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/gitter_dataset.csv
+    filepath: ./data/01_raw/mock_gitter.csv
 
 drugbank:
     type: json.JSONDataSet
-    filepath: ./data/01_raw/drugbank_database_dict.json
+    filepath: ./data/01_raw/drugbank_mock_short.json
     
 pubchem:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/pubchem_compound_list.csv
+    filepath: ./data/01_raw/mock_pubchem.csv
 
 processed_gitter:
     type: pandas.CSVDataSet
     filepath: ./data/02_intermediate/processed_gitter.csv
+
+preprocessed_pubchem:
+    type: pandas.CSVDataSet
+    filepath: ./data/02_intermediate/preprocessed_pubchem.csv 
 
 processed_pubchem:
     type: pandas.CSVDataSet
@@ -27,9 +31,27 @@ preprocessed_drugbank:
     type: pandas.CSVDataSet
     filepath: ./data/02_intermediate/preprocessed_drugbank.csv
 
-companies:
- type: pandas.CSVDataSet
- filepath: data/01_raw/companies.csv
+processed_drugbank:
+    type: pandas.CSVDataSet
+    filepath: ./data/02_intermediate/processed_drugbank.csv
+
+all_drugs_table:
+    type: pandas.CSVDataSet
+    filepath: ./data/03_primary/all_drugs_dataset.csv
+
+fingerprint_table:
+    type: pickle.PickleDataSet
+    filepath: data/05_model_input/input_table.pickle
+    versioned: True
+
+fingerprints_accuracies:
+    type: json.JSONDataSet
+    filepath: data/05_model_input/fingerprints_accuracies.json
+
+
+
+
+
 
 reviews:
  type: pandas.CSVDataSet
@@ -40,14 +62,6 @@ shuttles:
  filepath: data/01_raw/shuttles.xlsx
  load_args:
   engine: openpyxl # Use modern Excel engine (the default since Kedro 0.18.0)
-
-preprocessed_companies:
- type: pandas.ParquetDataSet
- filepath: data/02_intermediate/preprocessed_companies.parquet
-
-preprocessed_shuttles:
- type: pandas.ParquetDataSet
- filepath: data/02_intermediate/preprocessed_shuttles.parquet
 
 model_input_table:
   type: pandas.ParquetDataSet

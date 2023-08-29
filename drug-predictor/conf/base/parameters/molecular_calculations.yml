@@ -1,0 +1,12 @@
+table_features:
+  columns_to_drop:
+    - HBondAcceptorCount
+    - HBondDonorCount
+    - IsomericSMILES
+    - MolecularWeight
+    - LogP
+    - RuleFive
+build_molecule_column:
+  base: IsomericSMILES
+  calculated: Molecule
+
