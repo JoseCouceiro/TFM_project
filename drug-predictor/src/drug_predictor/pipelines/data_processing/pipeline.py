@@ -4,7 +4,6 @@ from .nodes import process_gitter, preprocess_pubchem, \
                    process_pubchem, preprocess_drugbank, \
                    process_drugbank, join_datasets
 
-
 def create_pipeline(**kwargs) -> Pipeline:
     return pipeline(
         [
@@ -54,6 +53,6 @@ def create_pipeline(**kwargs) -> Pipeline:
                         'processed_gitter'],
                 outputs='all_drugs_table',
                 name='join_datasets_node'
-            )   
+            )            
         ]
     )

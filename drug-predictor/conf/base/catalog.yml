@@ -5,15 +5,15 @@
 
 gitter:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/mock_gitter.csv
+    filepath: ./data/01_raw/gitter_dataset.csv
 
 drugbank:
     type: json.JSONDataSet
-    filepath: ./data/01_raw/drugbank_mock_short.json
+    filepath: ./data/01_raw/drugbank_database_dict.json
     
 pubchem:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/mock_pubchem.csv
+    filepath: ./data/01_raw/Pubchem_compound_list.csv
 
 processed_gitter:
     type: pandas.CSVDataSet
@@ -39,6 +39,10 @@ all_drugs_table:
     type: pandas.CSVDataSet
     filepath: ./data/03_primary/all_drugs_dataset.csv
 
+code_to_label_dic:
+    type: json.JSONDataSet
+    filepath: ./data/03_primary/code_to_label_dic.json
+
 fingerprint_table:
     type: pickle.PickleDataSet
     filepath: data/05_model_input/input_table.pickle
@@ -48,26 +52,34 @@ fingerprints_accuracies:
     type: json.JSONDataSet
     filepath: data/05_model_input/fingerprints_accuracies.json
 
-
-
-
-
-
-reviews:
- type: pandas.CSVDataSet
- filepath: data/01_raw/reviews.csv
-
-shuttles:
- type: pandas.ExcelDataSet
- filepath: data/01_raw/shuttles.xlsx
- load_args:
-  engine: openpyxl # Use modern Excel engine (the default since Kedro 0.18.0)
-
-model_input_table:
-  type: pandas.ParquetDataSet
-  filepath: data/03_primary/model_input_table.parquet
-
-regressor:
+split_col:
     type: pickle.PickleDataSet
-    filepath: data/06_models/regressor.pickle
-    versioned: True
+    filepath: data/05_model_input/split_col.pickle
+
+model_data:
+    type: pickle.PickleDataSet
+    filepath: data/05_model_input/model_data.pickle
+
+selected_fingerprint:
+    type: text.TextDataSet
+    filepath: data/05_model_input/selected_fp.txt
+
+def_model:
+    type: tensorflow.TensorFlowModelDataset
+    filepath: data/06_models/def_model.hd5
+    load_args:
+        compile: False
+    save_args:
+        overwrite: True
+        
+history:
+    type: pickle.PickleDataSet
+    filepath: data/06_models/history.pickel
+
+predictions:
+    type: pickle.PickleDataSet
+    filepath: data/08_reporting/evaluation.pickle
+
+predictions:
+    type: pandas.CSVDataSet
+    filepath: ./data/08_reporting/predictions.csv 

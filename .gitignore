@@ -24,3 +24,4 @@ MVP/app/__pycache__/compute_fp.cpython-311.pyc
 *.asn
 *.sdf
 *.xml
+*.hdf5

@@ -22,7 +22,7 @@ query=st.text_input("Insert molecule's CID or SMILES: ")
 with open(os.path.join('..','res','config', 'class_codes.json'), 'r') as file:
     class_codes_dict = json.load(file)
 
-CNN_model = load_model(os.path.join('..','compiled_models','checkpoints', '04-0.991.hdf5'))
+CNN_model = load_model('C:/Users/josin/GitRepositories/TFM_project/drug-predictor/data/06_models/def_model.hd5')
 
 
 def get_molecule_from_cid(cid):

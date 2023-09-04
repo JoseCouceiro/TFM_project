@@ -8,7 +8,7 @@ def create_pipeline(**kwargs) -> Pipeline:
       node(
         func=get_model_input,
         inputs=["all_drugs_table", 'params:build_molecule_column', "params:table_features"],
-        outputs='fingerprint_table',
+        outputs=['fingerprint_table', 'code_to_label_dic'],
         name="get_model_input_node",
       )
     ]
