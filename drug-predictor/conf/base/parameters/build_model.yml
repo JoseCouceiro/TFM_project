@@ -1,5 +1,14 @@
-# This is a boilerplate parameters config generated for pipeline 'build_model'
-# using Kedro 0.18.10.
-#
-# Documentation for this file format can be found in "Parameters"
-# Link: https://docs.kedro.org/en/0.18.10/kedro_project_setup/configuration.html#parameters
+columns:
+  list_of_fingerprints:
+    - 'Morgan2FP' 
+    - 'MACCSKeys'
+    - 'AtomPairFP' 
+    - 'TopTorFP'
+    - 'AvalonFP' 
+    - 'PubchemFP'
+  label:
+    - 'Label'
+tune_model:
+  objective: 'val_loss'
+  max_trials : 5
+  date: '230714_09'

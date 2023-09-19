@@ -118,18 +118,18 @@ def compute_pubchem_fingerprints(cid: int) -> np.array:
         return None
     return np.array(list(fp_bin)).astype('int')
 
-def compute_cactvs_fingerprints(cid: int) -> np.array:
-    """Function that obtains the Cactvs fingerprints of a molecule.
+""" def compute_cactvs_fingerprints(cid: int) -> np.array:
+    Function that obtains the Cactvs fingerprints of a molecule.
     Input: molecule's CID.
     Output: numpy array.
-    """
+    
     try:
         comp = pcp.Compound.from_cid(int(cid))
         cactvs_fp_bin = bin(int(comp.fingerprint, 16))[2:]
     except:
         print('Something went wrong computing Cactvs fingerprints')
         return None
-    return np.array(list(cactvs_fp_bin)).astype('int')
+    return np.array(list(cactvs_fp_bin)).astype('int') """
 
 # Getting RDKit molecules
 
@@ -176,7 +176,7 @@ def extract_code_to_label_dic(all_drugs: pd.DataFrame) -> Dict:
     code_to_label_dic = code_to_label_dataset.to_dict()['MATC_Code_Explanation']
     return code_to_label_dic
 
-# Building of a dataframe of fingerprints
+# Building a dataframe of fingerprints
 
 def get_fingerprints(all_drugs: pd.DataFrame) -> pd.DataFrame:
     """
@@ -185,8 +185,8 @@ def get_fingerprints(all_drugs: pd.DataFrame) -> pd.DataFrame:
     Input: pandas dataframe containing a 'Molecule' column.
     Output: pandas dataframe containing several fingerprints columns.
     """
-    all_drugs['FeatInvariants'] = all_drugs['Molecule'].map(compute_feature_invariants)
-    all_drugs['ConnInvariants'] = all_drugs['Molecule'].map(compute_connectivity_invariants)
+    #all_drugs['FeatInvariants'] = all_drugs['Molecule'].map(compute_feature_invariants)
+    #all_drugs['ConnInvariants'] = all_drugs['Molecule'].map(compute_connectivity_invariants)
     all_drugs['Morgan2FP'] = all_drugs['Molecule'].map(compute_morgan_fp)
     all_drugs['MACCSKeys'] = all_drugs['Molecule'].map(compute_maccskeys)
     all_drugs['AtomPairFP'] = all_drugs['Molecule'].map(compute_atom_pair_fp)
@@ -194,7 +194,7 @@ def get_fingerprints(all_drugs: pd.DataFrame) -> pd.DataFrame:
     all_drugs['AvalonFP'] = all_drugs['Molecule'].map(compute_avalon_fp)
     
     all_drugs['PubchemFP']= all_drugs['CID'].map(compute_pubchem_fingerprints) #This takes over 1 hour in my computer
-    all_drugs['CactvsFP']= all_drugs['CID'].map(compute_cactvs_fingerprints) #This takes over 1 hour in my computer
+    #all_drugs['CactvsFP']= all_drugs['CID'].map(compute_cactvs_fingerprints) #This takes over 1 hour in my computer
     #all_drugs['RDKitFP']= all_drugs['Molecule'].map(compute_rdkit_fp) #This takes so long that crashes my computer, but I coudn't find a way around
     
     return all_drugs
@@ -202,12 +202,14 @@ def get_fingerprints(all_drugs: pd.DataFrame) -> pd.DataFrame:
 def clean_dataset(all_drugs: pd.DataFrame, selected_columns: Dict) -> pd.DataFrame:
     """
     Function that drops unnecessary columns from a pandas dataset and encodes the 'Label' column as an integer. \
-        The unnecesary columns are set in the parameters.
+        The unnecesary columns are set in the parameters. Finally, drop entries which may have not worked correctly \
+        using pandas' funtion "dropna()".
     Input: pandas dataframe, dictionary containing column names.
     Output: pandas dataframe.
     """
     all_drugs = drop_columns(all_drugs, selected_columns)
     all_drugs = label_encoder(all_drugs)
+    all_drugs = all_drugs.dropna()
     return all_drugs
 
 # Combined functions

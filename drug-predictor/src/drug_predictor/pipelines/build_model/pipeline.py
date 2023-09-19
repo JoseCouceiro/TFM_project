@@ -13,19 +13,23 @@ def create_pipeline(**kwargs) -> Pipeline:
     [ 
       node(
         func=determine_best_fp,
-        inputs=["fingerprint_table"],
+        inputs=["fingerprint_table",
+                "params:columns",
+                "params:columns"],
         outputs='fingerprints_accuracies',
         name="determine_best_fingerprints",
       ),
       node(
         func=prepare_data,
-        inputs=['fingerprint_table', 'fingerprints_accuracies'],
+        inputs=['fingerprint_table',
+                'fingerprints_accuracies',
+                "params:columns"],
         outputs=['split_col', 'model_data', 'selected_fingerprint'],
         name='prepare_data_node'      
       ),
       node(
         func=obtain_model,
-        inputs=['split_col', 'model_data'],
+        inputs=['split_col', 'model_data', "params:tune_model"],
         outputs=['def_model', 'history'],
         name='obtain_model_node'
       )

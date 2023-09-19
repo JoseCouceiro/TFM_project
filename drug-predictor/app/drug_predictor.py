@@ -75,6 +75,21 @@ def return_predictions(arr, query):
     y_pred = CNN_model.predict(arr)
     st.markdown(f"##### The compound with {is_cid_or_smiles(query)} '{query}' is predicted as {class_codes_dict[str(np.argmax(y_pred))]} with probability: {y_pred.max():.2f}**")
 
+def return_output(mol):
+    """
+    Function that returns all the output of the application, giving the structure and the prediction fort the query molecule. It uses the functions \
+    'get_fp', 'reshape_fp_array' and 'return_predictions' to achieve this.
+    Input: molecule RDKit object
+    Output: draws the molecule structure and prints predictions.
+    """
+    st.write("This is your compound's structure")
+    mol_image = Draw.MolToImage(mol)
+    st.image(mol_image)
+    fp_chain = get_fp(selected_fp, mol)
+    arr = reshape_fp_array(fp_chain)
+    return_predictions(arr, query)
+
+
 def pred_from_cid(query):
     """
     Checks the input and runs all the functions in order to obtain a prediction from a CID identifier.
@@ -86,12 +101,7 @@ def pred_from_cid(query):
         try:
             mol = get_molecule_from_cid(query)
             if mol:
-                st.write("This is your compound's structure")
-                mol_image = Draw.MolToImage(mol)
-                st.image(mol_image)
-                fp_chain = get_fp(selected_fp, mol)
-                arr = reshape_fp_array(fp_chain)
-                return_predictions(arr, query)
+                return_output(mol)
         except:
             st.write(':red[Please, enter a valid CID]')
             break
@@ -106,12 +116,7 @@ def pred_from_smiles(query):
     while not mol:
         mol = get_molecule_from_smiles(query)
         if mol:
-            st.write("This is your compound's structure")
-            mol_image = Draw.MolToImage(mol)
-            st.image(mol_image)
-            fp_chain = get_fp(selected_fp, mol)
-            arr = reshape_fp_array(fp_chain)
-            return_predictions(arr, query)
+            return_output(mol)
         else:
             st.write(':red[Please, enter a valid SMILES]')
             break
