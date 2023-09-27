@@ -30,7 +30,7 @@ def create_pipeline(**kwargs) -> Pipeline:
       node(
         func=obtain_model,
         inputs=['split_col', 'model_data', "params:tune_model"],
-        outputs=['def_model', 'history'],
+        outputs=['def_model', 'history', 'predictions', 'classification_report'],
         name='obtain_model_node'
       )
     ]

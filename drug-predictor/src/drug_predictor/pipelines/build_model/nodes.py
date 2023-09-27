@@ -23,6 +23,7 @@ def train_test_split_column(input_pickle: pd.DataFrame, column: str, label: dict
       label: name of the column selected as y values.
     Output: train/test tuple.
     """
+    print(len(input_pickle.shape))
     X = input_pickle[column]
     y = input_pickle[label]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
@@ -42,7 +43,9 @@ def train_test_split_columns(input_pickle: pd.DataFrame, column_list: dict, labe
     for column in column_list['list_of_fingerprints']:
         X_train, X_test, y_train, y_test = train_test_split_column(input_pickle, column, label['label'])
         splits_dic[column] = X_train, X_test, y_train, y_test
+        print('X_train_shape: ', X_train.shape)
     return splits_dic
+    
 
 def reshape_input(tuple_split: tuple) -> tuple:
     """
@@ -57,11 +60,11 @@ def reshape_input(tuple_split: tuple) -> tuple:
     # Determine number of classes
     n_classes = len(np.unique(tuple_split[2]))
     # Reshape X
-    X_train= X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
-    X_test= X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
+    reshaped_X_train= X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
+    reshaped_X_test= X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
     # Determine in_shape
-    in_shape = X_train.shape[1:]
-    return X_train, X_test, in_shape, n_classes
+    in_shape = reshaped_X_train.shape[1:]
+    return reshaped_X_train, reshaped_X_test, in_shape, n_classes
 
 # Functions to build a model to select the best fingerprints
 
@@ -74,7 +77,7 @@ def build_array_dic(splits_dic: dict) -> dict:
     """
     arrays_models_dic = {}
     for column, tup in splits_dic.items():                                                                                                                                                                                                                                                                              
-        model_data = reshape_input(tup)       
+        model_data = reshape_input(tup)  
         model = build_selection_model(model_data[2], model_data[3])
         arrays_models_dic[column] = model_data[0], model_data[1], tup[2], tup[3], model
     return arrays_models_dic
@@ -201,8 +204,9 @@ def get_predictions(tuned_model: Sequential, x_test: pd.Series, y_test: pd.Serie
     """
     y_pred = tuned_model.predict(x_test)
     y_pred_list = [argmax(x) for x in y_pred]
-    print(metrics.classification_report(y_test,y_pred_list))
-    return pd.Series(y_pred_list)
+    class_rep = metrics.classification_report(y_test,y_pred_list)
+    print(class_rep)
+    return pd.Series(y_pred_list), class_rep
 
 def visualize_training(history):
     """
@@ -275,6 +279,6 @@ def obtain_model(split_col: tuple, model_data: tuple, tune_params: dict) -> tupl
     """
     tuned_model = tune_hp_def_model(model_data, split_col[2], split_col[3], tune_params)
     def_model, history = train_def_model(tuned_model, model_data, split_col[2], split_col[3])
-    predictions = get_predictions(tuned_model, model_data[1], split_col[3])
+    predictions, class_rep = get_predictions(tuned_model, model_data[1], split_col[3])
     #visualize_training(history)
-    return def_model, predictions
+    return def_model, history, predictions, class_rep

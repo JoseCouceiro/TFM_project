@@ -212,19 +212,33 @@ def clean_dataset(all_drugs: pd.DataFrame, selected_columns: Dict) -> pd.DataFra
     all_drugs = all_drugs.dropna()
     return all_drugs
 
+def extract_validataion_dataset(all_drugs: pd.DataFrame, n) -> pd.DataFrame:
+    """
+    Function that extracts 'n' random entries of a dataset and returns them as a separated dataset. \
+        The original dataset with the 200 entries is returned as well.
+    Input: a pandas dataframe.
+    Output: two pandas dataframe.
+    """
+    validation=all_drugs.sample(n)
+    training=all_drugs.drop(index=validation.index)
+
+    return validation, training
+
 # Combined functions
 
-def get_model_input(all_drugs: pd.DataFrame, columns: Dict, selected_columns: Dict) -> pd.DataFrame:
+def get_model_input(all_drugs: pd.DataFrame, columns: Dict, selected_columns: Dict, validation_size) -> pd.DataFrame:
     """
-    Function build a dataframe containing molecule descriptors, their corresponding fingerprints and a numerical label.
+    Function to build two dataframes (one for validation and one for training) containing molecule descriptors, \
+        their corresponding fingerprints and a numerical label.
     Args:
       all_drugs: processed dataframe.
       columns: list of column names convert from descriptor to RDKit molecule.
       selected_columns: list of column names to drop.
-    Output: pandas dataframe, dictionary of numerical labels to code explanations.
+    Output: pandas dataframes, dictionary of numerical labels to code explanations.
     """
     all_drugs = add_molecule_column(all_drugs, columns)
     all_drugs = get_fingerprints(all_drugs)
     all_drugs = clean_dataset(all_drugs, selected_columns)
+    validation_set, training_set = extract_validataion_dataset(all_drugs, validation_size)
     code_to_label_dic = extract_code_to_label_dic(all_drugs)
-    return all_drugs, code_to_label_dic
+    return validation_set, training_set, code_to_label_dic

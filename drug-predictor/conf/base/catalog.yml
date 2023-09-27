@@ -5,15 +5,15 @@
 
 gitter:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/gitter_dataset.csv
+    filepath: ./data/01_raw/mock_gitter.csv
 
 drugbank:
     type: json.JSONDataSet
-    filepath: ./data/01_raw/drugbank_database_dict.json
+    filepath: ./data/01_raw/drugbank_mock_short.json
     
 pubchem:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/Pubchem_compound_list.csv
+    filepath: ./data/01_raw/mock_pubchem.csv
 
 processed_gitter:
     type: pandas.CSVDataSet
@@ -48,6 +48,11 @@ fingerprint_table:
     filepath: data/05_model_input/input_table.pickle
     versioned: True
 
+validation_dataset:
+    type: pickle.PickleDataSet
+    filepath: data/05_model_input/input_table_val.pickle
+    versioned: True
+
 fingerprints_accuracies:
     type: json.JSONDataSet
     filepath: data/05_model_input/fingerprints_accuracies.json
@@ -74,12 +79,12 @@ def_model:
         
 history:
     type: pickle.PickleDataSet
-    filepath: data/06_models/history.pickel
+    filepath: data/06_models/history.pickle
 
 predictions:
     type: pickle.PickleDataSet
     filepath: data/08_reporting/evaluation.pickle
 
-predictions:
-    type: pandas.CSVDataSet
-    filepath: ./data/08_reporting/predictions.csv 
+classification_report:
+    type: text.TextDataSet
+    filepath: ./data/08_reporting/classiffication_report.txt 
