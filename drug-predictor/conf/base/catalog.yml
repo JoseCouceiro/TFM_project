@@ -46,12 +46,10 @@ code_to_label_dic:
 fingerprint_table:
     type: pickle.PickleDataSet
     filepath: data/05_model_input/input_table.pickle
-    versioned: True
 
 validation_dataset:
     type: pickle.PickleDataSet
     filepath: data/05_model_input/input_table_val.pickle
-    versioned: True
 
 fingerprints_accuracies:
     type: json.JSONDataSet
@@ -78,8 +76,8 @@ def_model:
         overwrite: True
         
 history:
-    type: pickle.PickleDataSet
-    filepath: data/06_models/history.pickle
+    type: json.JSONDataSet
+    filepath: data/06_models/history.json
 
 predictions:
     type: pickle.PickleDataSet
@@ -88,3 +86,16 @@ predictions:
 classification_report:
     type: text.TextDataSet
     filepath: ./data/08_reporting/classiffication_report.txt 
+
+training_fig:
+    type: matplotlib.MatplotlibWriter
+    filepath: data/08_reporting/training_fig.png
+    save_args:
+        format: png
+
+confussion_matrix_fig:
+    type: matplotlib.MatplotlibWriter
+    filepath: data/08_reporting/confussion_matrix.png
+    save_args:
+        format: png
+

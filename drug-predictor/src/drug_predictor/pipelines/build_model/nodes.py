@@ -1,4 +1,5 @@
 import os
+import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,7 +24,6 @@ def train_test_split_column(input_pickle: pd.DataFrame, column: str, label: dict
       label: name of the column selected as y values.
     Output: train/test tuple.
     """
-    print(len(input_pickle.shape))
     X = input_pickle[column]
     y = input_pickle[label]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
@@ -43,7 +43,6 @@ def train_test_split_columns(input_pickle: pd.DataFrame, column_list: dict, labe
     for column in column_list['list_of_fingerprints']:
         X_train, X_test, y_train, y_test = train_test_split_column(input_pickle, column, label['label'])
         splits_dic[column] = X_train, X_test, y_train, y_test
-        print('X_train_shape: ', X_train.shape)
     return splits_dic
     
 
@@ -127,8 +126,6 @@ def tune_hp_def_model(model_data: tuple, y_train: pd.Series, y_test: pd.Series, 
       tune_params: a set of optional parameters.
     Output: a tuned CNN model.
     """
-    print('y_train type: ', type(y_train))
-    print('X_test type: ', type(y_test))
     tuner = RandomSearch(build_def_model,
                     objective=tune_params['objective'],
                     max_trials =tune_params['max_trials'],
@@ -185,12 +182,14 @@ def train_def_model(tuned_model: Sequential, model_data: tuple, y_train: pd.Seri
     es = EarlyStopping(monitor='val_loss', patience=10)
     mc = ModelCheckpoint(filepath = os.path.join('temp', 'compiled_model', 'checkpoints', '{epoch:02d}-{val_accuracy:.3f}.hdf5'), monitor = 'val_loss', save_best_only = True)
     # Fit the model
-    history = tuned_model.fit(model_data[0], y_train, epochs=200, batch_size=128, verbose=1, validation_split = 0.3, callbacks = [es,mc])
+    tuned_model.fit(model_data[0], y_train, epochs=200, batch_size=128, verbose=1, validation_split = 0.3, callbacks = [es,mc])
+    history_dic = tuned_model.history.history
     # Evaluate the model
     loss, acc = tuned_model.evaluate(model_data[1], y_test, verbose=1)
-    print('history type: ', type(history))
     
-    return tuned_model, history
+    return tuned_model, history_dic
+
+# Evaluation and visualization
 
 def get_predictions(tuned_model: Sequential, x_test: pd.Series, y_test: pd.Series):
     """
@@ -208,28 +207,28 @@ def get_predictions(tuned_model: Sequential, x_test: pd.Series, y_test: pd.Serie
     print(class_rep)
     return pd.Series(y_pred_list), class_rep
 
-def visualize_training(history):
+def visualize_training(history_dic):
     """
     Function that plots the training history of a CNN model showing values of training and validation loss and accuracy.
     Args: the training history
-    Output: nothing
+    Output: a matplotlib figure
     """
     fig,ax = plt.subplots()
     plt.style.use('ggplot')
 
-    epochs = len(history.history['loss'])
+    epochs = len(history_dic['loss'])
     epoch_values = list(range(epochs))
 
-    ax.plot(epoch_values, history.history['loss'], label='Training loss')
-    ax.plot(epoch_values, history.history['val_loss'], label='Validation loss')
-    ax.plot(epoch_values, history.history['accuracy'], label='Training accuracy')
-    ax.plot(epoch_values, history.history['val_accuracy'], label='Validation accuracy')
+    ax.plot(epoch_values, history_dic['loss'], label='Training loss')
+    ax.plot(epoch_values, history_dic['val_loss'], label='Validation loss')
+    ax.plot(epoch_values, history_dic['accuracy'], label='Training accuracy')
+    ax.plot(epoch_values, history_dic['val_accuracy'], label='Validation accuracy')
 
     ax.set_title('Training loss and accuracy')
     ax.set_xlabel('Epoch')
     ax.set_ylabel('Loss/Accuracy')
     ax.legend()
-    plt.show()
+    return fig
 
 # Combined functions
 
@@ -280,5 +279,8 @@ def obtain_model(split_col: tuple, model_data: tuple, tune_params: dict) -> tupl
     tuned_model = tune_hp_def_model(model_data, split_col[2], split_col[3], tune_params)
     def_model, history = train_def_model(tuned_model, model_data, split_col[2], split_col[3])
     predictions, class_rep = get_predictions(tuned_model, model_data[1], split_col[3])
-    #visualize_training(history)
     return def_model, history, predictions, class_rep
+
+def plot_graphs(history):
+    training_fig = visualize_training(history)
+    return training_fig

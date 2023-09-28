@@ -4,12 +4,13 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+from sklearn import metrics
 
-class ClassificationReportGraph():
+class Graphs():
 
     def __init__(self):
         with open(os.path.join('..', '..', 'data', '03_primary', 'code_to_label_dic.json')) as codes:
-            self.label_dic = json.load(codes)
+            self.label_dic = json.load(codes)        
 
     def show_values(self, pc, fmt="%.2f", **kw):
         '''
@@ -127,3 +128,16 @@ class ClassificationReportGraph():
         figure_height = len(class_names) + 7
         correct_orientation = False
         self.heatmap(np.array(plotMat), title, xlabel, ylabel, xticklabels, yticklabels, figure_width, figure_height, correct_orientation, cmap=cmap)
+
+    def plot_confusion_matrix(self, y_pred, y_test):
+        """Function that plots the confussion matrix into a graphic
+        Args: predictions, true_values, dictionary of codes and labels
+        Output: a matplotlib figure
+        """
+        labels = list(set(y_pred).union(set(np.unique(y_test))))
+        y_labels = [self.label_dic[str(y)] for y in labels]
+
+        #Plot
+        disp=metrics.ConfusionMatrixDisplay.from_predictions(y_test,y_pred, normalize='true', display_labels=y_labels, xticks_rotation='vertical')
+        #disp.figure_.savefig('../drug-predictor/temp/cm.png')
+        return disp.figure_
