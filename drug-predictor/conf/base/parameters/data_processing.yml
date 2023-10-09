@@ -44,21 +44,21 @@ matc_gitter_conversion:
   urological: "G"
 
 matc_codes_explanation: 
-  A: "ALIMENTARY TRACT AND METABOLISM"
-  B: "BLOOD AND BLOOD FORMING ORGANS"
-  C: "CARDIOVASCULAR SYSTEM"
-  D: "DERMATOLOGICALS"
-  G: "GENITO URINARY SYSTEM AND SEX HORMONES"
-  H: "SYSTEMIC HORMONAL PREPARATIONS EXCL. SEX HORMONES AND INSULINS"
-  J: "ANTIINFECTIVES FOR SYSTEMIC USE"
-  L: "ANTINEOPLASTIC AND IMMUNOMODULATING AGENTS"
-  M: "MUSCULO-SKELETAL SYSTEM"
-  N: "NERVOUS SYSTEM"
-  P: "ANTIPARASITIC PRODUCTS INSECTICIDES AND REPELLENTS"
-  R: "RESPIRATORY SYSTEM"
-  S: "SENSORY ORGANS"
-  V: "VARIOUS"
-  I: "ANTIINFLAMMATORY"
-  O: "LIPID REGULATION"
+  A: 'Alimentary tract and metabolism'
+  B: 'Blood and blood forming organs'
+  C: 'Cardiovascular system'
+  D: 'Dermatologicals'
+  G: 'Genito urinary system and sex hormones'
+  H: 'Systemic hormonal preparations excluding sex hormones and insulins'
+  J: 'Antiinfectives for systemic use'
+  L: 'Antineoplastic and immunomodulating agents'
+  M: 'Musculo-skeletal system'
+  N: 'Nervous system'
+  P: 'Antiparasitic products insecticides and repellents'
+  R: 'Respiratory system'
+  S: 'Sensory organs'
+  V: 'Various'
+  I: 'Antiinflammatory'
+  O: 'Lipid regulation'
 
 

@@ -51,7 +51,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=['processed_pubchem',
                         'processed_drugbank',
                         'processed_gitter'],
-                outputs='all_drugs_table',
+                outputs='input_dataset',
                 name='join_datasets_node'
             )            
         ]

@@ -9,9 +9,9 @@ import pubchempy as pcp
 
 def get_small_molecules(x: list) -> List:
     """
-    Function that extracts the small molecules from the Drugbank database and discards the biomolecules
-    Input: list of molecules
-    Output: list of small molecules
+    Function that extracts the small molecules from the Drugbank database and discards the biomolecules.
+    Input: list of molecules.
+    Output: list of small molecules.
     """
     small_drug_list = []
     for drug in x:
@@ -194,10 +194,10 @@ def is_lipinski(x: pd.DataFrame) -> pd.DataFrame:
     Output: pandas dataframe.
     """
     # Lipinski rules
-    hdonor = x['HBondDonorCount'] < 6
-    haccept = x['HBondAcceptorCount'] < 10
+    hdonor = x['HBondDonorCount'] <= 5
+    haccept = x['HBondAcceptorCount'] <= 10
     mw = x['MolecularWeight'] < 500
-    clogP = x['LogP'] < 5
+    clogP = x['LogP'] <= 5
     # Apply rules to dataframe
     x['RuleFive'] = np.where(((hdonor & haccept & mw) | (hdonor & haccept & clogP) | (hdonor & mw & clogP) | (haccept & mw & clogP)), 1, 0)
     return x
@@ -206,7 +206,7 @@ def is_lipinski(x: pd.DataFrame) -> pd.DataFrame:
 
 def matc_conversion(x: pd.DataFrame, parameters: Dict) -> pd.DataFrame:
     """
-    Function that transforms the label data "drug_class" into the standard for every dataframe "MATC_Code_Short" using a dictionary.
+    Function that transforms the label data "drug_class" into the standard for every dataframe ("MATC_Code_Short") using a dictionary.
     Input: pandas dataframe.
     Output: pandas dataframe.
     """
@@ -228,11 +228,12 @@ def process_gitter(gitter: pd.DataFrame, columns: Dict, conversions: Dict, expla
     """ Functions that processes the data from the gitter dataset.
     Args:
       gitter: raw Gitter dataset.
-      columns: list of columns to drop and rename arrange in a dictionary.
+      columns: list of columns to drop and rename arranged in a dictionary.
       conversions: a dictionary with label conversions.
       explanations: a dictionary with the explanations of the MATC code.
     Returns:
-      Processed dataset without irrelevant columns, "drug_class" changed to "MATC_Code_Short", and added columns "RuleFive" and "MATC_conversion".
+      Processed dataset without irrelevant columns, "drug_class" changed to "MATC_Code_Short", \
+        and added columns "RuleFive" and "MATC_conversion".
     """
     gitter = drop_columns(gitter, columns['irrelevant_columns'])
     gitter = rename_columns(gitter, columns['columns_to_rename'])
@@ -262,9 +263,9 @@ def process_pubchem(pubchem: pd.DataFrame, columns: Dict, explanations: Dict) ->
     Args:
       pubchem: prerocessed Pubchem dataset.
       columns: list of columns to drop.
-      explanations: dictionary with the explanations of the MATC_Code
+      explanations: dictionary with the explanations of the MATC_Code.
     Returns:
-      Processed dataset without irrelevant columns, "ATC_Code" changed to "MATC_Code_Short", and added column "MATC_conversion"
+      Processed dataset without irrelevant columns, "ATC_Code" changed to "MATC_Code_Short", and added column "MATC_Code_Explanation".
     """
     pubchem['MATC_Code_Short'] = shorten_atc_code(pubchem['ATC_Code'])
     pubchem['MATC_Code_Explanation'] = matc_explanation(pubchem['MATC_Code_Short'], explanations)
@@ -296,7 +297,7 @@ def process_drugbank(drugbank: pd.DataFrame, pubchem:pd.DataFrame, columns: Dict
       drugbank: preprocessed Drugbank dataset.
       pubchem: processed Pubchen dataset.
       columns: list of columns to drop.
-      explanations: dictionary with the explanations of the MATC_Code
+      explanations: dictionary with the explanations of the MATC_Code.
     Returns:
       Processed dataset containing only molecules that have an ATC_Code and SMILES and are not present in the pubchem dataset. \
       Irrelevant columns are dropped and "MATC_Code_Short", "CID" and "MATC_Code_Explantion" are added.
@@ -312,7 +313,8 @@ def process_drugbank(drugbank: pd.DataFrame, pubchem:pd.DataFrame, columns: Dict
     return drugbank
 
 def join_datasets(pubchem: pd.DataFrame, drugbank: pd.DataFrame, gitter: pd.DataFrame) -> pd.DataFrame:
-    """ Function that further processes the data from the drugbank dataset.
+    """ Function joins three datasets together. To avoid duplications, it only concatenates the frames after duplicated CIDs are\
+    eliminated from a given dataset by using the method 'isin'.
     Args:
       drugbank: processed Drugbank dataset.
       pubchem: processed Pubchen dataset.

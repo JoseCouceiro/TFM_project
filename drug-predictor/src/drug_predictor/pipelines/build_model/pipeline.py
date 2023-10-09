@@ -5,7 +5,7 @@ generated using Kedro 0.18.10
 
 from kedro.pipeline import Pipeline, node, pipeline
 from .nodes import determine_best_fp, prepare_data, \
-                   obtain_model, plot_graphs
+                   obtain_model
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -30,14 +30,8 @@ def create_pipeline(**kwargs) -> Pipeline:
       node(
         func=obtain_model,
         inputs=['split_col', 'model_data', "params:tune_model"],
-        outputs=['def_model', 'history', 'predictions', 'classification_report'],
+        outputs=['def_model', 'history'],
         name='obtain_model_node'
-      ),
-      node(
-        func=plot_graphs,
-        inputs=['history'],
-        outputs=['training_fig'],
-        name='visualization_node'
       )
     ]
     )

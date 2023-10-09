@@ -9,5 +9,5 @@ table_features:
 build_molecule_column:
   base: IsomericSMILES
   calculated: Molecule
-size_validation_data: 10
+size_validation_data: 2
 

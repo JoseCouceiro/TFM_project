@@ -9,30 +9,6 @@ from typing import List, Dict
 
 # Functions to obtain fingerprints
 
-def compute_connectivity_invariants(mol) -> np.array:
-    """Function that obtains the connectivity invariants of a molecule.
-    Input: RDKit molecule object.
-    Output: numpy array.
-    """
-    try:
-        con_inv_fp = rdMolDescriptors.GetConnectivityInvariants(mol)
-    except:
-        print('Something went wrong computing Connectivity Invariants')
-        return None
-    return np.array(con_inv_fp)
-
-def compute_feature_invariants(mol) -> np.array:
-    """Function that obtains the feature invariants of a molecule.
-    Input: RDKit molecule.
-    Output: numpy array.
-    """
-    try:
-        inv_fp = rdMolDescriptors.GetFeatureInvariants(mol)
-    except:
-        print('Something went wrong computing Feature Invariants')
-        return None
-    return np.array(inv_fp)
-
 def compute_morgan_fp(mol, depth=2, nBits=2048) -> np.array:
     """Function that obtains the Morgan fingerprints of a molecule.
     Input: RDKit molecule.
@@ -93,18 +69,6 @@ def compute_avalon_fp(mol, nBits=2048) -> np.array:
         return None
     return np.array(av_fp)
 
-def compute_rdkit_fp(mol, maxPath=5, fpSize=2048) -> np.array:
-    """Function that obtains the RDKit fingerprints of a molecule.
-    Input: RDKit molecule.
-    Output: numpy array.
-    """
-    try:
-        rdkit_fp = AllChem.RDKFingerprint(mol, maxPath, fpSize)
-    except:
-        print('Something went wrong computing RDKit fingerprints')
-        return None
-    return np.array(rdkit_fp)
-
 def compute_pubchem_fingerprints(cid: int) -> np.array:
     """Function that obtains the PubChem fingerprints of a molecule.
     Input: molecules's CID.
@@ -117,19 +81,6 @@ def compute_pubchem_fingerprints(cid: int) -> np.array:
         print('Something went wrong computing Pubchem fingerprints')
         return None
     return np.array(list(fp_bin)).astype('int')
-
-""" def compute_cactvs_fingerprints(cid: int) -> np.array:
-    Function that obtains the Cactvs fingerprints of a molecule.
-    Input: molecule's CID.
-    Output: numpy array.
-    
-    try:
-        comp = pcp.Compound.from_cid(int(cid))
-        cactvs_fp_bin = bin(int(comp.fingerprint, 16))[2:]
-    except:
-        print('Something went wrong computing Cactvs fingerprints')
-        return None
-    return np.array(list(cactvs_fp_bin)).astype('int') """
 
 # Getting RDKit molecules
 
@@ -180,29 +131,24 @@ def extract_code_to_label_dic(all_drugs: pd.DataFrame) -> Dict:
 
 def get_fingerprints(all_drugs: pd.DataFrame) -> pd.DataFrame:
     """
-    Function that takes RDKit mol objects from a pandas dataframe column and, by mapping the functions described above, \
+    Function that takes RDKit mol objects from a pandas dataframe column and, by mapping the functions different functions, \
         generates from it different columns containing fingerprints. 
     Input: pandas dataframe containing a 'Molecule' column.
     Output: pandas dataframe containing several fingerprints columns.
     """
-    #all_drugs['FeatInvariants'] = all_drugs['Molecule'].map(compute_feature_invariants)
-    #all_drugs['ConnInvariants'] = all_drugs['Molecule'].map(compute_connectivity_invariants)
     all_drugs['Morgan2FP'] = all_drugs['Molecule'].map(compute_morgan_fp)
     all_drugs['MACCSKeys'] = all_drugs['Molecule'].map(compute_maccskeys)
     all_drugs['AtomPairFP'] = all_drugs['Molecule'].map(compute_atom_pair_fp)
     all_drugs['TopTorFP'] = all_drugs['Molecule'].map(compute_topological_torsion_fp)
     all_drugs['AvalonFP'] = all_drugs['Molecule'].map(compute_avalon_fp)
-    
-    all_drugs['PubchemFP']= all_drugs['CID'].map(compute_pubchem_fingerprints) #This takes over 1 hour in my computer
-    #all_drugs['CactvsFP']= all_drugs['CID'].map(compute_cactvs_fingerprints) #This takes over 1 hour in my computer
-    #all_drugs['RDKitFP']= all_drugs['Molecule'].map(compute_rdkit_fp) #This takes so long that crashes my computer, but I coudn't find a way around
+    all_drugs['PubchemFP']= all_drugs['CID'].map(compute_pubchem_fingerprints) #This step takes over 1 hour
     
     return all_drugs
 
 def clean_dataset(all_drugs: pd.DataFrame, selected_columns: Dict) -> pd.DataFrame:
     """
     Function that drops unnecessary columns from a pandas dataset and encodes the 'Label' column as an integer. \
-        The unnecesary columns are set in the parameters. Finally, drop entries which may have not worked correctly \
+        The unnecesary columns are set in the parameters. Finally, it drops entries which may have not worked correctly \
         using pandas' funtion "dropna()".
     Input: pandas dataframe, dictionary containing column names.
     Output: pandas dataframe.
@@ -212,21 +158,20 @@ def clean_dataset(all_drugs: pd.DataFrame, selected_columns: Dict) -> pd.DataFra
     all_drugs = all_drugs.dropna()
     return all_drugs
 
-def extract_validataion_dataset(all_drugs: pd.DataFrame, n) -> pd.DataFrame:
+def extract_validataion_dataset(all_drugs: pd.DataFrame, n: int) -> pd.DataFrame:
     """
-    Function that extracts 'n' random entries of a dataset and returns them as a separated dataset. \
-        The original dataset with the 200 entries is returned as well.
-    Input: a pandas dataframe.
+    Function that extracts a percentage 'n' of random entries of a dataset and returns them as a separated dataset.
+    Input: a pandas dataframe, a floater
     Output: two pandas dataframe.
     """
-    validation=all_drugs.sample(n)
+    validation=all_drugs.sample(int((n/100)*len(all_drugs)))
     training=all_drugs.drop(index=validation.index)
 
     return validation, training
 
 # Combined functions
 
-def get_model_input(all_drugs: pd.DataFrame, columns: Dict, selected_columns: Dict, validation_size) -> pd.DataFrame:
+def get_model_input(all_drugs: pd.DataFrame, columns: Dict, selected_columns: Dict, validation_size: int) -> pd.DataFrame:
     """
     Function to build two dataframes (one for validation and one for training) containing molecule descriptors, \
         their corresponding fingerprints and a numerical label.

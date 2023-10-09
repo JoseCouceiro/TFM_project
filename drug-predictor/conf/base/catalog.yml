@@ -1,15 +1,10 @@
-# Here you can define all your data sets by using simple YAML syntax.
-#
-# Documentation for this file format can be found in "The Data Catalog"
-# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
-
 gitter:
     type: pandas.CSVDataSet
     filepath: ./data/01_raw/mock_gitter.csv
 
 drugbank:
     type: json.JSONDataSet
-    filepath: ./data/01_raw/drugbank_mock_short.json
+    filepath: ./data/01_raw/mock_drugbank.json
     
 pubchem:
     type: pandas.CSVDataSet
@@ -35,7 +30,7 @@ processed_drugbank:
     type: pandas.CSVDataSet
     filepath: ./data/02_intermediate/processed_drugbank.csv
 
-all_drugs_table:
+input_dataset:
     type: pandas.CSVDataSet
     filepath: ./data/03_primary/all_drugs_dataset.csv
 
@@ -73,19 +68,28 @@ def_model:
     load_args:
         compile: False
     save_args:
+        save_format: h5
         overwrite: True
         
 history:
     type: json.JSONDataSet
     filepath: data/06_models/history.json
 
-predictions:
+train_predictions:
     type: pickle.PickleDataSet
-    filepath: data/08_reporting/evaluation.pickle
+    filepath: data/08_reporting/train_predictions.pickle
 
-classification_report:
+train_classification_report:
     type: text.TextDataSet
-    filepath: ./data/08_reporting/classiffication_report.txt 
+    filepath: ./data/08_reporting/train_classification_report.txt 
+
+validation_predictions:
+    type: pickle.PickleDataSet
+    filepath: data/08_reporting/validation_predictions.pickle
+
+validation_classification_report:
+    type: text.TextDataSet
+    filepath: ./data/08_reporting/validation_classification_report.txt 
 
 training_fig:
     type: matplotlib.MatplotlibWriter
