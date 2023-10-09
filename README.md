@@ -5,7 +5,7 @@
 This repository contains the code to run the app Drug Predictor,
 a python application capable of predicting the therapeutic potential of molecules from their chemical structures.
 
-It serves as Master thesis for the Master in Data Science 2022/23 at KSCHOOL together with the Memoria that can be found in the folder 'memoria'.
+It serves as Master thesis for the Master's degree in Data Science 2022/23 at KSCHOOL together with the Memoria that can be found in the folder 'memoria'.
 
 
 To run the project, the following steps are required:
@@ -16,7 +16,7 @@ To run the project, the following steps are required:
  -> Run the Kedro application:
      The raw data can be found at https://1drv.ms/f/s!Aorqmaz_NWu2j9FQhoGSSgid9dQVfg?e=PQWhxx
      First, the data must be moved into the folder \drug-predictor\data\01_raw
-     Many more details about the data are provided in the README_evaluator.md file inside \drug-predictor
+     (Many more details about the data are provided in the README_evaluator.md file inside \drug-predictor)
      Then run:
          kedro run
  -> This will generate a model whose performance can be analysed with the Visualization app.
