@@ -7,12 +7,14 @@ a python application capable of predicting the therapeutic potential of molecule
 
 It serves as the Master thesis for the Master's degree in Data Science 2022/23 at KSCHOOL together with the Memoria that can be found in the folder 'memoria'.
 
+
 To run the project, the following steps are required:
  -> Mount the environment:
      A requirements text for a conda environmnet can be found at \drug-predictor\src\requirements.txt.
      Activate conda and run from inside the project's folder:
           pip install -r src/requirements.txt
  -> Run the Kedro application:
+     The raw data can be found at https://1drv.ms/f/s!Aorqmaz_NWu2j9FQhoGSSgid9dQVfg?e=PQWhxx
      First, the data must be moved into the folder \drug-predictor\data\01_raw
      Many more details about the data are provided in the README_evaluator.md file inside \drug-predictor
      Then, inside the projects folder, run:
@@ -23,4 +25,3 @@ To run the project, the following steps are required:
  -> Finally, the user interface of the model, where a potential user can send queries to the model, can be found at \drug-predictor\apps\drug_predictor
      To run it, use the command:
          streamlit run drug_predictor.py
-
