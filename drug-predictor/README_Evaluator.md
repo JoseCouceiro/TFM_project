@@ -26,8 +26,12 @@ They contain several examples of use with possible exceptions and errors.
 
 2. Models
 
-Three trained models are provided. Those are the ones obtained by training with the datasets provided in the folder 03_primary. They can be found in the folder 06_models.
+Three trained models are provided. Those are the ones obtained by training with the datasets provided in the folder 03_primary. They can be found in the folder 06_models. They are useful to analyse the performance of the complementary apps without having to run the kedro app with large datasets
 
 3. Notebooks
 
 The folder 'notebooks' contains some notebooks to perform some previous operations to the raw data before  applying the Kedro app,  to obtain special datasets, to provide some explanations of the function of some apps in notebook format, etc, in case they were of interest.
+
+4. Known errors
+
+There are two errors reported in the memoria. Some other unreported errors may ocurr when running the Kedro app with the mock datasets due to their small size. Please, relaunch it if this occurred. The results provided by the Kedro app when trained with the mock datasets may also cause errors in the visualization app. You can always evaluate the performance of this app using the data provided in the folders /07_model_output and 08_reporting.
