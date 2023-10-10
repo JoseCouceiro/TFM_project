@@ -12,7 +12,7 @@ The kedro application needs three datasets to work correctly:
 Since running times are in the range of hours when the aproximately 10000 molecules are analysed,
 shorter versions of the datasets are provided (marked as mock_ instead of dataset_).
 Then the running times are reduced to some minutes.
-You can determine which ones to use in the Kedro catalog.
+You can determine which ones to use in the Kedro catalog in conf/base/catalog.yml
 
 In the documentation acompanying this work, there are some assays made with variations of the datasets, 
 a dataset with fewer labels and a dataset with a more balanced distributions of labels.
@@ -24,6 +24,10 @@ in case partial runs of the kedro app wanted to be run independently.
 Folder data/09_examples contains small datasets that can be used with the application Drug Predictor High Throughput.
 They contain several examples of use with possible exceptions and errors.
 
-2. Notebooks
+2. Models
+
+Three trained models are provided. Those are the ones obtained by training with the datasets provided in the folder 03_primary. They can be found in the folder 06_models.
+
+3. Notebooks
 
 The folder 'notebooks' contains some notebooks to perform some previous operations to the raw data before  applying the Kedro app,  to obtain special datasets, to provide some explanations of the function of some apps in notebook format, etc, in case they were of interest.
