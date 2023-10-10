@@ -1,29 +1,8 @@
-﻿Compound_031500001_032000000.xml.gz
-Compound_052000001_052500000.sdf.gz
-Compound_150500001_151000000.xml.gz
-morgan_and_mac.pkl
-morgan_and_mac.csv
-1213001_1214000
-compiled_models
-first_CNN
-frontend
-medaigual
-modelo_compilado_no entrenado
-three
-untitled_project
-1213001_1214000
-Drugbank database/drugbank_all_full_database.xml/full database.xml
-Drugbank database/drugbank_all_full_database.xml/full_database_dict.json
-*.pkl
-Pubmed_database/Compound_168000001_168500000.xml
-Pubmed_database/Compound_168000001_168500000.sdf
-Pubmed_database/two_pubmed_instances.xml
-MVP/app/__pycache__/compute_fp.cpython-311.pyc
-*.csv
-*.json
+﻿*.csv
 *.asn
 *.sdf
 *.xml
 *.hdf5
 *.pickle
-*.csv
+drug-predictor/data/01_raw/mock_drugbank.json
+drug-predictor/data/01_raw/dataset_drugbank.json

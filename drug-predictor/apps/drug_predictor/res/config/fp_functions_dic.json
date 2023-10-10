@@ -1,0 +1,12 @@
+
+{
+  "FeatInvariants": "compute_feature_invariants",
+  "ConnInvariants": "compute_connectivity_invariants",
+  "Morgan2FP": "compute_morgan_fp",
+  "MACCSKeys": "compute_maccskeys",
+  "AtomPairFP": "compute_atom_pair_fp",
+  "TopTorFP": "compute_topological_torsion_fp",
+  "AvalonFP": "compute_avalon_fp",
+  "PubchemFP": "compute_pubchem_fingerprints",
+  "CactvsFP": "compute_cactvs_fingerprints"
+}
