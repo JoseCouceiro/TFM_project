@@ -34,4 +34,4 @@ The folder 'notebooks' contains some notebooks to perform some previous operatio
 
 4. Known errors
 
-There are two errors reported in the memoria. Some other unreported errors may ocurr when running the Kedro app with the mock datasets due to their small size. Please, relaunch it if this occurred. The results provided by the Kedro app when trained with the mock datasets may also cause errors in the visualization app. You can always evaluate the performance of this app using the data provided in the folders /07_model_output and 08_reporting.
+There are two errors reported in the memoria. Some other unreported errors may ocurr when running the Kedro app with the mock datasets due to their small size. Please, relaunch it if this occurred. The results provided by the Kedro app when trained with the mock datasets may also cause errors in the visualization app. You can always evaluate the performance of this app using the data provided in the folders /05 /08_reporting.

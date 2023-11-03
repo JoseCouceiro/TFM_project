@@ -1,14 +1,14 @@
 gitter:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/mock_gitter.csv
+    filepath: ./data/01_raw/dataset_gitter.csv
 
 drugbank:
     type: json.JSONDataSet
-    filepath: ./data/01_raw/mock_drugbank.json
+    filepath: ./data/01_raw/dataset_drugbank.json
     
 pubchem:
     type: pandas.CSVDataSet
-    filepath: ./data/01_raw/mock_pubchem.csv
+    filepath: ./data/01_raw/dataset_pubchem.csv
 
 processed_gitter:
     type: pandas.CSVDataSet

@@ -7,6 +7,12 @@ a python application capable of predicting the therapeutic potential of molecule
 
 It serves as Master thesis for the Master's degree in Data Science 2022/23 at KSCHOOL together with the Memoria that can be found in the folder 'memoria'.
 
+### Project Structure
+
+The folder 'drug-predictor' comprises a Kedro application organized in the following manner:
+
+### Running the project
+
 To run the project, the following steps are required:
 
 -> Mount the environment:

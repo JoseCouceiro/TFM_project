@@ -141,7 +141,7 @@ class Calcs:
             st.markdown(f"##### The compound with \
                 {self.is_cid_or_smiles(query)} '{query}' is predicted as \
                 {self.class_codes_dict[str(np.argmax(y_pred))]} with probability: \
-                {y_pred.max():.2f}**"
+                {y_pred.max():.2f}"
                 )
     
 
