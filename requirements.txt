@@ -175,7 +175,6 @@ python-slugify==8.0.1
 pytoolconfig==1.2.5
 pytz==2023.3
 pyu2f==0.1.5
-pywin32==304
 pywinpty==2.0.10
 pyyaml==6.0
 pyzmq==25.1.0
