@@ -12,7 +12,7 @@ from compute_fp import Compute_FP
 
 class Display:
     """
-    This class generates the layout of Drug Predicto's application using Streamlit functions. It comprises 3 functions:
+    This class generates the layout of Drug Predictor's application using Streamlit functions. It comprises 3 functions:
         'show_tab1': creates tab1 for Drug Predictor.
         'show_tab2': creates tab2 for Drug Predictor High Throughput.
         'show_sidebar': creates the sidebar with pictures and links to resources.
