@@ -3,7 +3,7 @@
 *.sdf
 *.xml
 *.hdf5
-!/drug-predictor/data/06_models
+!/drug-predictor/data/06_models/def_model.hd5
 *.pickle
 drug-predictor/data/01_raw/mock_drugbank.json
 drug-predictor/data/01_raw/dataset_drugbank.json
