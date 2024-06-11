@@ -28,10 +28,20 @@ class Display:
 
     def show_sidebar(self):
         with st.sidebar:
-                st.write("Get your molecule's CID [here](https://pubchem.ncbi.nlm.nih.gov/)")
-                st.image(os.path.join('res', 'images', 'pubchem.png'), width=200)
-                st.write("Draw your molecule and get its SMILES [here](https://web.chemdoodle.com/demos/smiles#customise-template)")
-                st.image(os.path.join('res', 'images', 'chemdoodleweb.png'), width=200)
+            st.write("Get your molecule's CID [here](https://pubchem.ncbi.nlm.nih.gov/)")
+            pubchem_image_path = os.path.join('res', 'images', 'pubchem.png')
+            if os.path.isfile(pubchem_image_path):
+                try:
+                    pubchem_image = Image.open(pubchem_image_path)
+                    st.image(pubchem_image, width=200)
+                except Exception as e:
+                    st.error(f"Error opening the image file 'pubchem.png': {e}")
+            else:
+                st.error(f"File not found: {pubchem_image_path}")
+            
+            st.image(os.path.join('res', 'images', 'pubchem.png'), width=200)
+            st.write("Draw your molecule and get its SMILES [here](https://web.chemdoodle.com/demos/smiles#customise-template)")
+            st.image(os.path.join('res', 'images', 'chemdoodleweb.png'), width=200)
     
 class Calcs:
     """
