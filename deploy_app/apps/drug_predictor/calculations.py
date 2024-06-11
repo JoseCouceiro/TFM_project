@@ -39,7 +39,14 @@ class Display:
                 st.error(f"File not found: {pubchem_image_path}")
             
             st.write("Draw your molecule and get its SMILES [here](https://web.chemdoodle.com/demos/smiles#customise-template)")
-            st.image(os.path.join('res', 'images', 'chemdoodleweb.png'), width=200)
+            chemdoodle_image_path = os.path.join('res', 'images', 'chemdoodleweb.png')
+            if os.path.isfile(chemdoodle_image_path):
+                try:
+                    st.image(chemdoodle_image_path, width=200)
+                except Exception as e:
+                    st.error(f"Error opening the image file 'chemdoodleweb.png': {e}")
+            else:
+                st.error(f"File not found: {chemdoodle_image_path}")
     
 class Calcs:
     """
