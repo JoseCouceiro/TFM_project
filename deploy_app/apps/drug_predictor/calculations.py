@@ -42,7 +42,7 @@ class Calcs:
 
         self.computer = Compute_FP()
         
-        self.CNN_model = load_model(os.path.join('..', '..', 'data', '06_models', 'def_model.h5'))
+        self.CNN_model = load_model(os.path.join('..', '..', 'data', '06_models', '1def_model.h5'))
 
         with open(os.path.join('..', '..', 'data', '03_primary', 'code_to_label_dic.json'), 'r') as file:
             self.class_codes_dict = json.load(file)
