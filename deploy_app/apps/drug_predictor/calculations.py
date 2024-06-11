@@ -29,11 +29,10 @@ class Display:
     def show_sidebar(self):
         with st.sidebar:
             st.write("Get your molecule's CID [here](https://pubchem.ncbi.nlm.nih.gov/)")
-            pubchem_image_path = os.path.join('res', 'images', 'pubchem.png')
+            pubchem_image_path = os.path.join('deploy_app', 'apps', 'drug_predictor', 'res', 'images', 'pubchem.png')
             if os.path.isfile(pubchem_image_path):
                 try:
-                    pubchem_image = Image.open(pubchem_image_path)
-                    st.image(pubchem_image, width=200)
+                    st.image(pubchem_image_path, width=200)
                 except Exception as e:
                     st.error(f"Error opening the image file 'pubchem.png': {e}")
             else:
