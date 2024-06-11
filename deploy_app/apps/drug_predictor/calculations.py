@@ -38,7 +38,6 @@ class Display:
             else:
                 st.error(f"File not found: {pubchem_image_path}")
             
-            st.image(os.path.join('res', 'images', 'pubchem.png'), width=200)
             st.write("Draw your molecule and get its SMILES [here](https://web.chemdoodle.com/demos/smiles#customise-template)")
             st.image(os.path.join('res', 'images', 'chemdoodleweb.png'), width=200)
     
