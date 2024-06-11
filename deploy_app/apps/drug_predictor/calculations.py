@@ -44,10 +44,10 @@ class Calcs:
         
         self.CNN_model = load_model(os.path.join('deploy_app', 'data', '06_models', 'def_model.h5'))
 
-        with open(os.path.join('..', 'data', '03_primary', 'code_to_label_dic.json'), 'r') as file:
+        with open(os.path.join('deploy_app', 'data', '03_primary', 'code_to_label_dic.json'), 'r') as file:
             self.class_codes_dict = json.load(file)
 
-        with open(os.path.join('..', '..', 'data', '05_model_input', 'selected_fp.txt')) as file:
+        with open(os.path.join('deploy_app', 'data', '05_model_input', 'selected_fp.txt')) as file:
             self.selected_fp = file.readline()
 
     def get_molecule_from_cid(self, cid):
