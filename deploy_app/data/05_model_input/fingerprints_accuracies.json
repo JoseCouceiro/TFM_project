@@ -1,7 +1,8 @@
 {
-  "Morgan2FP": "0.932",
-  "MACCSKeys": "0.932",
-  "AtomPairFP": "0.932",
-  "TopTorFP": "0.932",
-  "AvalonFP": "0.932"
+  "Morgan2FP": "0.553",
+  "MACCSKeys": "0.410",
+  "AtomPairFP": "0.289",
+  "TopTorFP": "0.549",
+  "AvalonFP": "0.330",
+  "PubchemFP": "0.337"
 }
