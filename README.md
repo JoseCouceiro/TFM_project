@@ -16,7 +16,8 @@ As frontend, two applications can be found in the folder \drug-predictor\apps:
 
 
 2. visualization: application for the user to analyse model training and performance.
-![image](https://github.com/JoseCouceiro/TFM_project/assets/118387556/26ddd129-1009-4339-a6dd-9cb0a5592c83)
+![image](https://github.com/user-attachments/assets/e05e5acb-fdf6-4d8d-a31f-7832e43a74ab)
+
 
 
 To run the project, the following steps are required:
