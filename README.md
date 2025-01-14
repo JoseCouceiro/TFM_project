@@ -12,7 +12,8 @@ The project comprises a Kedro application as backend, which generates a convolut
 As frontend, two applications can be found in the folder \drug-predictor\apps:
 
 1. drug_predictor: application where the final user can make queries for medicinal application of drugs using PubChem CIDs or SMILES codes.
-![image](https://github.com/JoseCouceiro/TFM_project/assets/118387556/84bb072e-b7b4-4ec6-b367-d0c1e8681a17)
+![image](https://github.com/user-attachments/assets/dc1b7cfd-d3aa-4807-9a45-3538dac156b7)
+
 
 
 2. visualization: application for the user to analyse model training and performance.
