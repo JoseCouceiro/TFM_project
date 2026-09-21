@@ -1,3 +1,13 @@
+---
+title: Drug Predictor 2.0
+emoji: 💊
+colorFrom: blue
+colorTo: green
+sdk: streamlit
+app_file: drugpredictor2/apps/drugpredictor/drug_predictor.py
+pinned: false
+---
+
 # Drug & ATC Classification from Molecular Structure
 
 A transfer-learning pipeline that goes from a large-scale **Lipinski "drug-likeness" model**
