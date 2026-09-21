@@ -5,6 +5,9 @@ import numpy as np
 import pandas as pd
 import pubchempy as pcp
 import streamlit as st
+from huggingface_hub import hf_hub_download
+import pickle
+import streamlit as st
 from rdkit import Chem
 from rdkit.Chem import Draw
 
@@ -42,14 +45,14 @@ ATC_DESCRIPTIONS = {
 
 @st.cache_resource(show_spinner=False)
 def _load_model_cached(filename):
-    """Each model is ~1GB / 20s+ to unpickle (large Dense layer after the
-    Conv1D flatten). st.cache_resource keeps it in memory across Streamlit
-    reruns so this only happens once per server process, not per interaction.
-    """
-    path = os.path.join(DATA_DIR, '06_models', filename)
-    with open(path, 'rb') as f:
+    """Downloads the model from the HF Model repo if not already cached locally."""
+    # Ensure this matches your exact username/model-repo-name
+    path = hf_hub_download(
+        repo_id="JoseCouceiro/drugpredictor-models", 
+        filename=filename
+    )
+    with open(path, "rb") as f:
         return pickle.load(f)
-
 
 @st.cache_resource(show_spinner=False)
 def _load_mapping_cached(filename):
