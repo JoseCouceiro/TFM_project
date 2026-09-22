@@ -4,6 +4,7 @@ emoji: 💊
 colorFrom: blue
 colorTo: green
 sdk: streamlit
+sdk_version: "1.22.0"
 app_file: drugpredictor2/apps/drug_predictor/drug_predictor.py
 python_version: "3.10.18"
 pinned: false
