@@ -48,7 +48,7 @@ def _load_model_cached(filename):
     """Downloads the model from the HF Model repo if not already cached locally."""
     # Ensure this matches your exact username/model-repo-name
     path = hf_hub_download(
-        repo_id="JoseCouceiro/drugpredictor-models", 
+        repo_id="JoseCouceiro/drug_predictor_2.0_models", 
         filename=filename
     )
     with open(path, "rb") as f:
