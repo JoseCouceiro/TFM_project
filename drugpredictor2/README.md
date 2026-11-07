@@ -33,6 +33,26 @@ You can run your Kedro project with:
 kedro run
 ```
 
+## Data maintenance scripts
+
+The sharded datasets under `data/01_raw/csv_files` (raw CSVs) and
+`data/05_model_input/featurized_data` (featurized parquet shards) are named
+`<prefix>_<start:09d>_<end:09d>`, where `start`/`end` is the 1-based range of the
+rows held by that file, counted from the first row of the dataset. Two helpers
+keep them honest; both are dry runs unless `--apply` is passed and both can run
+without Kedro installed (they only need pandas):
+
+```
+python clean_dataset.py                 # report duplicated molecules / redundant partitions
+python clean_dataset.py --apply         # delete them (raw and featurized, same rule)
+
+python rename_partitions.py             # report partitions whose name does not match their rows
+python rename_partitions.py --apply     # renumber them so <start>_<end> spans exactly the rows
+```
+
+`notebooks/sdf_to_csv.ipynb` writes new partitions with the same rule and refuses
+to write into a directory whose names do not match their contents.
+
 ## How to test your Kedro project
 
 Have a look at the file `src/tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:

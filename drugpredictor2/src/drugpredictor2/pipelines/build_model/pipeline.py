@@ -13,7 +13,11 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=[
                     "featurized_data",
                     "params:train_params",
-                    "params:split_params"
+                    "params:split_params",
+                    # Directory behind `featurized_data`: lets the node read row
+                    # counts and label columns from the parquet footers instead of
+                    # materialising every shard (a full extra pass over ~7 GB).
+                    "params:featurized_data_path",
                 ],
                 outputs=[
                     "lipinski_model",
@@ -30,7 +34,8 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=[
                     "featurized_data",
                     "params:train_params_multitask",
-                    "params:split_params_multitask"
+                    "params:split_params_multitask",
+                    "params:featurized_data_path",
                 ],
                 outputs=[
                     "lipinski_multitask_model",

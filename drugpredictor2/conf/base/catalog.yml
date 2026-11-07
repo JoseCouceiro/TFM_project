@@ -17,6 +17,11 @@ selected_lipinski_backbone:
 featurized_data:
   type: PartitionedDataSet
   path: data/05_model_input/featurized_data
+  # Without a suffix every file in the directory becomes a partition, so a stray
+  # file (e.g. a *.partial left by an interrupted write) would be picked up and
+  # fed to ParquetDataSet. The raw layer declares `filename_suffix: ".csv"`;
+  # this layer must declare ".parquet" for the same reason.
+  filename_suffix: ".parquet"
   dataset:
     type: pandas.ParquetDataSet
     filepath: dummy.parquet
