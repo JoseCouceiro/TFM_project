@@ -14,13 +14,28 @@ from tensorflow import keras
 from keras import layers, models, optimizers, regularizers
 from keras_tuner import HyperParameters
 
+import re
+
 from .partitions import (
     partition_spans,
     predict_stream,
     predict_stream_multitask,
+    read_label_columns,
     stack_batch,
     valid_rows,
 )
+from .targets import build_output_specs, fit_target_transform
+
+
+def _head_name(column: str) -> str:
+    """Keras-safe output name for a label column.
+
+    Keras rejects spaces in layer/output names (``'Molecular Weight_head_dense'``
+    raises *"is not a valid root scope name"*), so every run of non-alphanumeric
+    characters becomes an underscore. The mapping is deterministic, which is why
+    the generators and the report can rebuild it without extra plumbing.
+    """
+    return re.sub(r"[^A-Za-z0-9]+", "_", column).strip("_")
 
 
 def _rss_mb():
@@ -476,9 +491,14 @@ def create_train_val_test_indices_multitask(
     return train_idx, val_idx, test_idx
 
 
-def _build_multitask_batch(df: pd.DataFrame, x_col: str, label_cols: List[str]):
+def _build_multitask_batch(
+    df: pd.DataFrame, x_col: str, label_cols: List[str], transform=None
+):
     X = stack_batch(df, x_col)
-    y = {col: df[col].to_numpy().astype(np.float32) for col in label_cols}
+    y = {}
+    for col in label_cols:
+        values = df[col].to_numpy().astype(np.float32)
+        y[_head_name(col)] = transform.forward(col, values) if transform is not None else values
     return X, y
 
 
@@ -490,6 +510,7 @@ def infinite_train_generator_multitask(
     shuffle_each_epoch: bool = False,
     seed: Optional[int] = None,
     data_path: Optional[str] = None,
+    transform=None,
 ):
     """Same traversal logic as infinite_train_generator, but yields a dict of
     label arrays (one per auxiliary target) instead of a single array."""
@@ -517,7 +538,7 @@ def infinite_train_generator_multitask(
 
             for i in range(0, len(df), batch_size):
                 chunk = df.iloc[i:i + batch_size]
-                yield _build_multitask_batch(chunk, x_col, label_cols)
+                yield _build_multitask_batch(chunk, x_col, label_cols, transform)
 
             # Release this partition's ~200MB+ DataFrame before loading the
             # next one — relying on lazy GC across a long fit() loop is what
@@ -532,6 +553,7 @@ def repeating_eval_generator_multitask(
     params: Dict[str, str],
     batch_size: int,
     data_path: Optional[str] = None,
+    transform=None,
 ):
     x_col, label_cols = params["X_column"], params["labels"]
     spans = _partition_spans(partition_loaders, data_path)
@@ -552,7 +574,7 @@ def repeating_eval_generator_multitask(
 
             for i in range(0, len(df), batch_size):
                 chunk = df.iloc[i:i + batch_size]
-                yield _build_multitask_batch(chunk, x_col, label_cols)
+                yield _build_multitask_batch(chunk, x_col, label_cols, transform)
 
             del df
             gc.collect()
@@ -594,7 +616,7 @@ def build_multitask_model(hp: HyperParameters, input_shape: tuple, output_specs:
 
     outputs, losses, loss_weights, metrics_dict = {}, {}, {}, {}
     for spec in output_specs:
-        name = spec["name"]
+        name = _head_name(spec["name"])
         head = layers.Dense(32, activation='relu', name=f"{name}_head_dense")(shared)
         if spec["type"] == "binary":
             outputs[name] = layers.Dense(1, activation='sigmoid', name=name)(head)
@@ -602,7 +624,16 @@ def build_multitask_model(hp: HyperParameters, input_shape: tuple, output_specs:
             metrics_dict[name] = ['accuracy']
         else:
             outputs[name] = layers.Dense(1, activation='linear', name=name)(head)
-            losses[name] = 'mse'
+            loss_name = spec.get("loss", "mse")
+            # Huber is the bounded-gradient option for heavy-tailed counts: it
+            # keeps the target in its own units (so predictions come back with
+            # no log-space bias) while capping how much a 200-bond molecule can
+            # pull on the weights.
+            losses[name] = (
+                keras.losses.Huber(delta=float(spec.get("huber_delta", 2.0)))
+                if loss_name == "huber"
+                else loss_name
+            )
             metrics_dict[name] = ['mae']
         loss_weights[name] = spec.get("loss_weight", 1.0)
 
@@ -636,21 +667,35 @@ def train_multitask_model_on_partitions(
     label_cols = split_params["labels"]
     label_types = split_params["label_types"]
     loss_weights = split_params.get("loss_weights", {})
-    output_specs = [
-        {"name": c, "type": label_types[c], "loss_weight": loss_weights.get(c, 1.0)}
-        for c in label_cols
-    ]
+    target_kinds = split_params.get("target_transforms", {})
+    target_losses = split_params.get("losses", {})
+    huber_delta = split_params.get("huber_delta", 2.0)
+    stop_monitor = split_params.get("stop_monitor", "val_loss")
+    stop_patience = split_params.get("stop_patience", 10)
+    stop_mode = "max" if stop_monitor.endswith("accuracy") else "min"
+    output_specs = build_output_specs(
+        label_cols, label_types, loss_weights, target_losses, huber_delta
+    )
 
     train_idx, val_idx, test_idx = create_train_val_test_indices_multitask(
         partitioned_model_input, split_params, data_path
     )
 
+    # Scale every target before it reaches the loss (fitted on the training
+    # rows only): without this the widest-range head owns the composite
+    # val_loss, which is exactly how NumRotatableBonds took over 31% of it.
+    label_frame = read_label_columns(partitioned_model_input, label_cols, data_path)
+    transform = fit_target_transform(label_frame, target_kinds, train_idx)
+    del label_frame
+    print(transform.describe())
+
     train_gen = infinite_train_generator_multitask(
         partitioned_model_input, train_idx, split_params, batch_size, shuffle_each_epoch=True,
-        data_path=data_path,
+        data_path=data_path, transform=transform,
     )
     val_gen = repeating_eval_generator_multitask(
-        partitioned_model_input, val_idx, split_params, batch_size, data_path=data_path
+        partitioned_model_input, val_idx, split_params, batch_size, data_path=data_path,
+        transform=transform,
     )
 
     steps_per_epoch = math.ceil(len(train_idx) / batch_size)
@@ -677,9 +722,13 @@ def train_multitask_model_on_partitions(
         validation_data=val_gen,
         validation_steps=validation_steps,
         callbacks=[
-            keras.callbacks.EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=False),
+            keras.callbacks.EarlyStopping(
+                monitor=stop_monitor, mode=stop_mode, patience=stop_patience,
+                min_delta=1e-4 if stop_mode == "max" else 0.0,
+                restore_best_weights=False, verbose=1,
+            ),
             keras.callbacks.ModelCheckpoint(
-                filepath=checkpoint_path, monitor="val_loss",
+                filepath=checkpoint_path, monitor=stop_monitor, mode=stop_mode,
                 save_best_only=True, save_weights_only=True, verbose=0,
             ),
             MemoryLog(),
@@ -696,9 +745,12 @@ def train_multitask_model_on_partitions(
     def _report(y_dict, preds):
         report_lines, pred_cols = [], {}
         for c in label_cols:
-            n = min(len(y_dict[c]), len(preds[c]))
-            y_true = y_dict[c][:n]
-            y_pred_raw = np.asarray(preds[c])[:n].ravel()
+            key = _head_name(c)
+            n = min(len(y_dict[key]), len(preds[key]))
+            # Back to the original units before measuring: MAE in bonds or
+            # grams/mol is what a chemist can read, not standardised units.
+            y_true = transform.inverse(c, y_dict[key][:n])
+            y_pred_raw = np.asarray(transform.inverse(c, np.asarray(preds[key])[:n])).ravel()
             pred_cols[f"{c}_true"] = y_true
             if label_types[c] == "binary":
                 y_pred = (y_pred_raw > 0.5).astype(int)
@@ -714,9 +766,12 @@ def train_multitask_model_on_partitions(
 
     def _evaluate(indices: List[int], steps: int):
         gen = repeating_eval_generator_multitask(
-            partitioned_model_input, indices, split_params, batch_size, data_path=data_path
+            partitioned_model_input, indices, split_params, batch_size, data_path=data_path,
+            transform=transform,
         )
-        y_true, y_pred = predict_stream_multitask(model, gen, steps, label_cols)
+        y_true, y_pred = predict_stream_multitask(
+            model, gen, steps, [_head_name(c) for c in label_cols]
+        )
         return _report(y_true, y_pred)
 
     val_predictions, val_report = _evaluate(val_idx, validation_steps)

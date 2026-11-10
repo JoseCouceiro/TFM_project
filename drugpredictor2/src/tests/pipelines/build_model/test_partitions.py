@@ -214,7 +214,7 @@ def test_predict_stream_multitask_normalises_a_list_output():
     )
 
     y_true, y_pred = predict_stream_multitask(
-        model, iter([batch]), steps=1, label_cols=["RuleFive", "QED"]
+        model, iter([batch]), steps=1, keys=["RuleFive", "QED"]
     )
 
     assert y_true["RuleFive"].tolist() == [0.0, 1.0]
@@ -229,7 +229,7 @@ def test_predict_stream_multitask_accepts_a_dict_output():
     model = _FakeModel(lambda _: {"RuleFive": np.array([[0.8]])})
 
     y_true, y_pred = predict_stream_multitask(
-        model, iter([batch]), steps=1, label_cols=["RuleFive"]
+        model, iter([batch]), steps=1, keys=["RuleFive"]
     )
 
     assert y_true["RuleFive"].tolist() == [1.0]

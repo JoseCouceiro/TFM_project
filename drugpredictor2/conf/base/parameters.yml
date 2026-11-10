@@ -14,28 +14,81 @@ train_params_multitask:
   batch_size: 16  # further reduced from 32 — same OOM kill recurred at 32
   epochs: 200
 
-# Multi-task pretraining: RuleFive (binary) + QED + 3 structural descriptors
-# (regression), instead of RuleFive alone, to give the shared backbone a
-# richer training signal to transfer downstream.
+# Multi-task pretraining: instead of the single binary RuleFive label, learn the
+# four descriptors RuleFive is computed from (Molecular Weight, LogP, H-Bond
+# Donors, H-Bond Acceptors) plus three other structural targets. RuleFive is
+# exactly "at most one rule violated", so the binary head adds nothing to the
+# information content of the four continuous ones - but it is kept as a final
+# head because it is the metric that gets reported and it optimises the
+# decision boundary directly. Predicting the four descriptors instead of their
+# threshold gives the shared backbone a much richer (and interpretable) signal.
 split_params_multitask:
   label: 'RuleFive'          # used only for stratified train/val/test split
   X_column: 'FP'
-  labels: ['RuleFive', 'QED', 'NumRotatableBonds', 'NumAromaticRings', 'FractionCSP3']
+  labels:
+    - 'RuleFive'
+    - 'Molecular Weight'
+    - 'LogP'
+    - 'H-Bond Donors'
+    - 'H-Bond Acceptors'
+    - 'QED'
+    - 'NumRotatableBonds'
+    - 'NumAromaticRings'
+    - 'FractionCSP3'
   label_types:
     RuleFive: binary
+    Molecular Weight: regression
+    LogP: regression
+    H-Bond Donors: regression
+    H-Bond Acceptors: regression
     QED: regression
     NumRotatableBonds: regression
     NumAromaticRings: regression
     FractionCSP3: regression
-  # Down-weight count-based regression heads (larger raw MSE scale) so no
-  # single head dominates the combined loss; tune after watching per-head
-  # losses in the first run.
+  # Each head is scaled to ~N(0,1) before it reaches the loss, fitted on the
+  # training rows only. Without this the widest-range head owns the composite
+  # val_loss: NumRotatableBonds (0..240) took 31% of it in the 07/11 run and
+  # the worst 1% of molecules carried 47% of that head's squared error.
+  #   standard         - centre/scale only
+  #   log_standard     - log first (right-tailed continuous values)
+  #   log1p_standard   - log1p first (skewed counts, keeps zeros)
+  # NOTE on NumRotatableBonds: log1p fixed the loss dynamics but cost accuracy
+  # (MAE 1.02 -> 1.18, R2 0.87 -> 0.76, predictions biased 0.6 bonds low after
+  # expm1). It now stays in raw units with a Huber loss instead - see `losses`.
+  target_transforms:
+    Molecular Weight: log_standard
+    LogP: standard
+    H-Bond Donors: log1p_standard
+    H-Bond Acceptors: log1p_standard
+    QED: standard
+    NumRotatableBonds: standard
+    NumAromaticRings: log1p_standard
+    FractionCSP3: standard
+  # Per-head loss override (default mse for regression, bce for binary).
+  # Huber caps the gradient of the molecules with 60-240 rotatable bonds that
+  # used to own 45% of that head's squared error, without the bias a log
+  # transform introduces. delta is in standardised units (2 sigma).
+  losses:
+    NumRotatableBonds: huber
+  huber_delta: 2.0
+  # Comparable after scaling, so no head needs a hand-tuned weight any more.
+  # RotB carries 2.0 because it lost 20 points of loss share when the other
+  # heads were scaled (31% -> 11% of the composite) and it is the hardest target.
   loss_weights:
     RuleFive: 1.0
+    Molecular Weight: 1.0
+    LogP: 1.0
+    H-Bond Donors: 1.0
+    H-Bond Acceptors: 1.0
     QED: 1.0
-    NumRotatableBonds: 0.01
-    NumAromaticRings: 0.05
+    NumRotatableBonds: 2.0
+    NumAromaticRings: 1.0
     FractionCSP3: 1.0
+  # Stop on the task we care about rather than on a sum dominated by a
+  # regression head: the 07/11 run froze at epoch 6 chasing RotB's val_loss
+  # while RuleFive accuracy was still improving until epoch 10.
+  stop_monitor: 'val_RuleFive_accuracy'
+  stop_patience: 12
   val_size: 0.1
   test_size: 0.1
 

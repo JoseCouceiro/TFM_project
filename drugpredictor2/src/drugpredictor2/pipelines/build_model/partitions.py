@@ -135,6 +135,29 @@ def fingerprint_column_is_complete(path, column: str, rows: int) -> bool:
         return False
 
 
+def read_label_columns(
+    partition_loaders: LoaderMap,
+    columns: Sequence[str],
+    data_path: Optional[str] = None,
+) -> pd.DataFrame:
+    """Read only the label columns of every partition, in loader order.
+
+    Used to fit the target scaling, so it deliberately never touches the
+    fingerprint column: all nine label columns for ~584 k rows come to ~40 MB,
+    against ~2 GB if the fingerprints were included.
+    """
+    wanted = list(columns)
+    frames = []
+    for name, load in partition_loaders.items():
+        path = resolve_partition_path(name, data_path)
+        frames.append(
+            pd.read_parquet(path, columns=wanted) if path is not None else load()[wanted]
+        )
+    if not frames:
+        return pd.DataFrame(columns=wanted)
+    return pd.concat(frames, ignore_index=True)
+
+
 def partition_row_counts(
     partition_loaders: LoaderMap, data_path: Optional[str] = None
 ) -> Dict[str, int]:
@@ -272,15 +295,16 @@ def predict_stream(model, gen, steps: int) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def predict_stream_multitask(
-    model, gen, steps: int, label_cols: Sequence[str]
+    model, gen, steps: int, keys: Sequence[str]
 ) -> Tuple[Dict[str, np.ndarray], Dict[str, np.ndarray]]:
     """Multi-head version of :func:`predict_stream`.
 
-    The model returns one array per head (or a dict keyed by head name); both
-    shapes are normalised to ``{head: values}``.
+    ``keys`` are the model's output names (the generator yields a dict keyed the
+    same way). The model returns one array per head, in output order; both that
+    shape and a dict are normalised to ``{key: values}``.
     """
-    y_true = {col: [] for col in label_cols}
-    y_pred = {col: [] for col in label_cols}
+    y_true = {key: [] for key in keys}
+    y_pred = {key: [] for key in keys}
 
     for _ in range(steps):
         try:
@@ -290,14 +314,14 @@ def predict_stream_multitask(
         predictions = model.predict_on_batch(X)
         if not isinstance(predictions, dict):
             predictions = {
-                name: predictions[index] for index, name in enumerate(label_cols)
+                key: predictions[index] for index, key in enumerate(keys)
             }
-        for col in label_cols:
-            y_true[col].append(np.asarray(y[col], dtype=np.float32).ravel())
-            y_pred[col].append(np.asarray(predictions[col]).ravel())
+        for key in keys:
+            y_true[key].append(np.asarray(y[key], dtype=np.float32).ravel())
+            y_pred[key].append(np.asarray(predictions[key]).ravel())
 
     empty = np.empty(0, dtype=np.float32)
     return (
-        {col: (np.concatenate(v) if v else empty) for col, v in y_true.items()},
-        {col: (np.concatenate(v) if v else empty) for col, v in y_pred.items()},
+        {key: (np.concatenate(v) if v else empty) for key, v in y_true.items()},
+        {key: (np.concatenate(v) if v else empty) for key, v in y_pred.items()},
     )
